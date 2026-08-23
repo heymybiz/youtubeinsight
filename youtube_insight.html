@@ -935,9 +935,12 @@
         AppState.ytKey = yt;
         AppState.geminiKey = gemini;
 
+        // 캐시 초기화 및 즉시 실시간 트렌드 재수집
+        TrendState.categoryData = {};
         updateKeyStatusUI();
         closeKeyModal();
-        showToast("✅ API 키가 브라우저에 안전하게 저장되었습니다!");
+        showToast("✅ API 키가 저장되었습니다! 실시간 트렌드를 다시 수집합니다.");
+        switchTrendCategory(TrendState.currentCategory);
     }
 
     function clearApiKeys() {
@@ -948,8 +951,12 @@
         AppState.geminiKey = '';
         document.getElementById('inputYtKey').value = '';
         document.getElementById('inputGeminiKey').value = '';
+        
+        // 캐시 초기화 및 Fallback 트렌드 재수집
+        TrendState.categoryData = {};
         updateKeyStatusUI();
         showToast("API 키가 삭제되었습니다.");
+        switchTrendCategory(TrendState.currentCategory);
     }
 
     function updateKeyStatusUI() {
@@ -1835,7 +1842,7 @@ ${topic}`;
         const countryCode = TrendState.currentCountry || 'KR';
         const countryInfo = SUPPORTED_COUNTRIES[countryCode] || SUPPORTED_COUNTRIES['KR'];
 
-        listEl.innerHTML = `<div style="text-align:center; padding:40px; color:#aaa;"><div class="spinner" style="margin:0 auto 15px auto; width:35px; height:35px;"></div>${countryInfo.flag} ${countryInfo.name} 실시간 자동완성 검색 랭킹 수집 중...</div>`;
+        listEl.innerHTML = `<div style="text-align:center; padding:40px; color:#aaa;"><div class="spinner" style="margin:0 auto 15px auto; width:35px; height:35px;"></div>${countryInfo.flag} ${countryInfo.name} 실시간 검색 랭킹 수집 중...</div>`;
 
         try {
             let rankingKeywords = [];
@@ -1856,14 +1863,14 @@ ${topic}`;
                 const merged = [];
                 results.forEach(arr => {
                     arr.forEach(kw => {
-                        if (!merged.includes(kw) && kw.length >= 2) merged.push(kw);
+                        if (!merged.includes(kw) && kw.length >= 2 && !isBlacklistedKeyword(kw)) merged.push(kw);
                     });
                 });
                 rankingKeywords = merged.slice(0, 20);
 
             } else {
                 subtitleEl.innerText = `${countryInfo.flag} ${countryInfo.name} 실시간 인기 급상승 검색어 순위입니다. (클릭 시 즉시 검색)`;
-                rankingKeywords = await getCategoryRankingList('all', countryCode);
+                rankingKeywords = await getCategoryRankingList(TrendState.currentCategory || 'all', countryCode);
             }
 
             if (rankingKeywords.length === 0) {
@@ -2053,107 +2060,168 @@ ${topic}`;
         shorts: { name: '쇼츠 떡상', catId: null }
     };
 
-    // 🌐 10대 주요 국가별 현지 언어 완벽 매핑 쿼리 풀 (Fallback용)
+    // 🚫 문자열 일치 더미/쓰레기 자동완성어 블랙리스트
+    const BLACKLIST_TREND_WORDS = [
+        '엘리베이터', '엘베', '급상승인기동영상', '급상승주', '급상승 주식', '급상승 코인', '급상승 노래',
+        '급상승 음악', '급상승 차트', '인기동영상', '실시간 이슈', '실시간 검색어', 'trending now', 'viral videos'
+    ];
+
+    function isBlacklistedKeyword(kw) {
+        if (!kw || kw.length < 2) return true;
+        const low = kw.toLowerCase().trim();
+        return BLACKLIST_TREND_WORDS.some(bw => low === bw || (low.startsWith('급상승') && low.length <= 6));
+    }
+
+    // 🌐 Google Trends 실시간 급상승 RSS 파서 (API 키 없이도 실제 사회적 핫토픽 실시간 수집)
+    async function fetchGoogleTrendsTopics(countryCode = 'KR') {
+        const geo = countryCode.toUpperCase();
+        const rssUrl = `https://trends.google.com/trending/rss?geo=${geo}`;
+        
+        // 1차 시도: rss2json 오픈 API
+        try {
+            const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.items && data.items.length > 0) {
+                    const list = data.items.map(item => ({
+                        title: item.title ? item.title.trim() : '',
+                        approxTraffic: item.description ? item.description.replace(/<[^>]*>/g, '').trim() : ''
+                    })).filter(i => i.title && !isBlacklistedKeyword(i.title));
+                    if (list.length > 0) return list;
+                }
+            }
+        } catch (_) {}
+
+        // 2차 시도: allorigins CORS 프록시 (XML 파싱)
+        try {
+            const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(rssUrl)}`);
+            if (res.ok) {
+                const xmlText = await res.text();
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+                const items = xmlDoc.querySelectorAll("item");
+                if (items && items.length > 0) {
+                    const list = [];
+                    items.forEach(node => {
+                        const tNode = node.querySelector("title");
+                        const trafficNode = node.getElementsByTagName("ht:approx_traffic")[0];
+                        const title = tNode ? tNode.textContent.trim() : '';
+                        if (title && !isBlacklistedKeyword(title)) {
+                            list.push({
+                                title: title,
+                                approxTraffic: trafficNode ? trafficNode.textContent.trim() : ''
+                            });
+                        }
+                    });
+                    if (list.length > 0) return list;
+                }
+            }
+        } catch (_) {}
+
+        return [];
+    }
+
+    // 🌐 10대 주요 국가별 카테고리 특화 스마트 시드 쿼리 풀 (유튜브 Suggestion Fallback용)
     const COUNTRY_CATEGORY_QUERIES = {
         KR: {
-            all: ['실시간 이슈', '급상승', '인기', '핫클립', '유튜브 핫이슈', '오늘의 이슈'],
-            entertainment: ['예능 하이라이트', '드라마 몰아보기', '연예인 인터뷰', '아이돌 예능'],
-            news: ['속보', '시사 직격', '사건사고 브리핑', '정치 핫이슈'],
-            gaming: ['롤 매드무비', '신작 게임', '스팀 게임 추천', '게임 공략'],
-            music: ['인기 플레이리스트', 'KPOP 신곡', '라이브 직캠', '음악 차트'],
-            finance: ['주식 전망', '부동산 현실', '무자본 부업', '비트코인 시황'],
-            food: ['먹방 레전드', '맛집 브이로그', '초간단 요리', '편의점 신상'],
-            shorts: ['#shorts', '쇼츠 챌린지', '쇼츠 꿀잼', '알고리즘 떡상 쇼츠']
+            all: ['오늘의 핫이슈', '화제의 영상', '실시간 뉴스 속보', '인기 하이라이트', '오늘 실시간 화제', '유튜브 인기 급상승'],
+            entertainment: ['예능 레전드', '드라마 명장면', '연예인 인터뷰 풀버전', '아이돌 자체예능'],
+            news: ['뉴스데스크 단독', 'JTBC 뉴스룸', 'SBS 8뉴스', '시사 직격 속보'],
+            gaming: ['롤 신규 패치', '치지직 하이라이트', '스팀 갓겜 추천', '신작 게임 플레이'],
+            music: ['멜론 Top 100', 'K-POP 신곡 라이브', '인기 플레이리스트 2026', '뮤직뱅크 직캠'],
+            finance: ['미국 증시 전망', '국내 주식 분석', '비트코인 실시간 시황', '부동산 현실 브리핑'],
+            food: ['성시경 먹을텐데', '풍자 또간집', '백종원 레시피', '쯔양 대식가 먹방'],
+            shorts: ['#shorts 챌린지', '쇼츠 도파민', '알고리즘 추천 쇼츠', '틱톡 떡상 쇼츠']
         },
         US: {
-            all: ['trending now', 'viral youtube', 'breaking news', 'hot topic', 'popular videos'],
-            entertainment: ['entertainment news', 'hollywood celebrity', 'movie trailer', 'viral clips'],
-            news: ['breaking news live', 'world news', 'us politics', 'today news'],
-            gaming: ['trending gaming', 'gameplay walkthrough', 'gta 6', 'fortnite montage'],
-            music: ['billboard hot 100', 'new music video', 'top hits', 'live performance'],
-            finance: ['stock market today', 'crypto news', 'real estate', 'how to make money online'],
-            food: ['street food', 'easy cooking recipes', 'food review', 'fast food mukbang'],
-            shorts: ['#shorts', 'viral shorts', 'trending shorts', 'funny shorts']
+            all: ['breaking news live', 'viral video today', 'trending topics', 'today in the news', 'hot topic highlights'],
+            entertainment: ['celebrity interview', 'hollywood movie trailer', 'late night show clips', 'oscars highlight'],
+            news: ['cnn live breaking', 'fox news today', 'nbc nightly news', 'bbc world news'],
+            gaming: ['gta 6 gameplay', 'mrbeast gaming', 'streamer highlights twitch', 'new steam games'],
+            music: ['billboard top 10', 'new music video 2026', 'vevo official hits', 'tiny desk concert'],
+            finance: ['stock market live', 'crypto bitcoin news', 'federal reserve rate', 'wall street analysis'],
+            food: ['street food tour', 'gordon ramsay recipe', 'fast food review', 'epic food challenge'],
+            shorts: ['#shorts viral', 'funny shorts tiktok', 'trending reels compilation', 'mindblowing shorts']
         },
         JP: {
-            all: ['急上昇', 'トレンド', '話題の動画', '最新ニュース', '人気動画'],
-            entertainment: ['バラエティ', '芸能ニュース', 'ドラマ 切り抜き', 'アニメ 最新話'],
-            news: ['速報 ニュース', '時事問題', '日本の政治', '事件 事故'],
-            gaming: ['ゲーム 実況', '新作ゲーム', 'モンハン', 'ポケモン 最新'],
-            music: ['人気曲 ランキング', 'J-POP 最新', '歌ってみた', 'ライブ 映像'],
-            finance: ['株式 投資', '新NISA おすすめ', '副業 初心者', 'ビットコイン'],
-            food: ['大食い グルメ', '絶品 レシピ', 'ラーメン 巡り', 'コンビニ 新商品'],
-            shorts: ['#shorts', 'ショート動画', 'バズる ショート', '面白い shorts']
+            all: ['本日の話題', '最新トレンド', '話題のニュース速報', '人気急上昇まとめ', '今注目の動画'],
+            entertainment: ['人気バラエティ 切り抜き', '芸能人 対談', 'アニメ 最新話 リアクション', 'ドラマ 見どころ'],
+            news: ['NHK ニュース速報', 'TBS NEWS DIG', '日テレNEWS Live', '時事問題 解説'],
+            gaming: ['モンスターハンター 最新', 'ホロライブ ゲーム実況', 'ポケモン 最新作', '任天堂 ダイレクト'],
+            music: ['THE FIRST TAKE', 'Billboard Japan 週間ランキング', 'J-POP 最新曲 MV', 'Ado 新曲'],
+            finance: ['新NISA 銘柄', '日経平均 株価 予想', '米国株 見通し', 'ビットコイン 最新情報'],
+            food: ['SUSURU TV ラーメン', '大食い MAX鈴木', 'リュウジ 料理レシピ', '東京 グルメ 巡り'],
+            shorts: ['#shorts バズ', 'ショートコント', 'TikTok トレンド 日本', '面白いショート動画']
         },
         GB: {
-            all: ['trending uk', 'bbc viral', 'uk news live', 'trending videos uk'],
-            entertainment: ['british tv shows', 'gogglebox', 'celebrity news uk', 'graham norton'],
-            news: ['bbc breaking news', 'sky news live', 'uk politics today', 'uk headlines'],
-            gaming: ['gaming uk', 'fifa gameplay', 'sidemen gaming', 'f1 gaming'],
-            music: ['official uk charts', 'uk drill', 'live lounge bbc', 'top music uk'],
-            finance: ['uk economy', 'london property', 'passive income uk', 'crypto news uk'],
-            food: ['british food review', 'gordon ramsay cooking', 'sunday roast recipe', 'uk street food'],
-            shorts: ['#shorts uk', 'funny british shorts', 'viral tiktok uk', 'comedy shorts']
+            all: ['bbc breaking news uk', 'trending today uk', 'viral video london', 'uk hot topics'],
+            entertainment: ['graham norton show highlights', 'gogglebox funny moments', 'british comedy panel show', 'brit awards live'],
+            news: ['sky news live uk', 'bbc news at ten', 'uk politics breaking', 'channel 4 news uk'],
+            gaming: ['sidemen gameplay', 'fifa pro club', 'f1 official game highlights', 'minecraft uk server'],
+            music: ['official uk top 40', 'bbc radio 1 live lounge', 'uk drill new', 'coldplay live performance'],
+            finance: ['bank of england rate', 'uk property market update', 'ftse 100 analysis', 'cost of living uk'],
+            food: ['gordon ramsay kitchen', 'sunday roast full recipe', 'traditional british pub food', 'london street food review'],
+            shorts: ['#shorts uk comedy', 'british banter shorts', 'funny street interview uk', 'viral tiktok uk']
         },
         VN: {
-            all: ['thịnh hành việt nam', 'video hot hôm nay', 'tin tức mới nhất việt nam', 'top thịnh hành'],
-            entertainment: ['show giải trí việt', 'anh trai say hi', 'rap việt', 'hài hước mới nhất'],
-            news: ['tin tức 24h việt nam', 'thời sự hôm nay', 'tin nóng việt nam', 'bản tin'],
-            gaming: ['liên quân mobile highlights', 'streamer việt nam', 'free fire vn', 'game kinh dị'],
-            music: ['nhạc trẻ hot 2026', 'vpop mới nhất', 'nhạc tiktok gây nghiện', 'liveshow âm nhạc'],
-            finance: ['đầu tư chứng khoán', 'kiếm tiền online tại nhà', 'bất động sản việt nam', 'tiền điện tử'],
-            food: ['ẩm thực đường phố việt nam', 'mukbang việt nam', 'món ngon mỗi ngày', 'review quán ăn'],
-            shorts: ['#shorts việt nam', 'shorts hài hước', 'clip triệu view việt nam', 'drama shorts']
+            all: ['tin tức nóng nhất hôm nay việt nam', 'video thịnh hành việt nam', 'chủ đề hot nhất', 'bản tin nóng'],
+            entertainment: ['show truyền hình thực tế hot', 'anh trai vượt ngàn chông gai', 'rap việt mùa mới', 'hài kịch việt nam'],
+            news: ['thời sự vtv1 19h', 'truyền hình quốc hội', 'tin tức 24h việt nam', 'báo thanh niên trực tiếp'],
+            gaming: ['liên quân mobile giải đấu', 'độ mixi highlights', 'free fire vn pro', 'streamer triệu view'],
+            music: ['top vpop thịnh hành', 'nhạc trẻ triệu view 2026', 'sơn tùng m-tp live', 'mv ca nhạc hot'],
+            finance: ['chứng khoán việt nam hôm nay', 'giá vàng hôm nay việt nam', 'thị trường bất động sản vn', 'đầu tư tài chính'],
+            food: ['ẩm thực sài gòn đường phố', 'khoa pub ẩm thực', 'món ăn miền tây', 'quán ăn ngon hà nội'],
+            shorts: ['#shorts việt nam hot', 'clip ngắn hài hước', 'drama shorts triệu view', 'tiktok trend việt']
         },
         TH: {
-            all: ['มาแรงในยูทูป', 'คลิปดังวันนี้', 'ข่าวฮิตติดเทรนด์', 'ยูทูปมาแรง'],
-            entertainment: ['รายการวาไรตี้', 'ละครย้อนหลัง', 'ช่อง one31', 'ร้องข้ามกำแพง'],
-            news: ['ข่าวล่าสุดวันนี้', 'เรื่องเล่าเช้านี้', 'ข่าวช่อง3', 'ประเด็นร้อน'],
-            gaming: ['rov ไฮไลท์', 'แคสเกมไทย', 'เกมใหม่น่าเล่น', 'free fire ไทย'],
-            music: ['เพลงฮิต 2026', 'เพลงใหม่มาแรง', 'เพลงไทยดังใน tiktok', 'คอนเสิร์ตสด'],
-            finance: ['การเงิน การลงทุน', 'หุ้นไทยวันนี้', 'หาเงินออนไลน์', 'คริปโต'],
-            food: ['สตรีทฟู้ดเมืองไทย', 'กินโชว์', 'สูตรอาหารง่ายๆ', 'รีวิวของกิน'],
-            shorts: ['#shorts ไทย', 'คลิปสั้นมาแรง', 'ช็อตตลก', 'ชาเลนจ์']
+            all: ['ประเด็นร้อนวันนี้', 'ข่าวฮิตติดเทรนด์', 'คลิปมาแรงยูทูป', 'คลิปไวรัลล่าสุด'],
+            entertainment: ['โหนกระแส ล่าสุด', 'ร้องข้ามกำแพง เต็มเรื่อง', 'เดอะเฟซ ไทยแลนด์', 'ซุปตาร์ พาเที่ยว'],
+            news: ['เรื่องเล่าเช้านี้ สด', 'ไทยรัฐนิวส์โชว์ สด', 'ข่าวเที่ยงวันทันเหตุการณ์', 'สำนักข่าวไทย'],
+            gaming: ['rov โปรลีก ไฮไลท์', 'แคสเกมผีไทย', 'สตรีมเมอร์อันดับ1', 'เกมมือถือมาแรง'],
+            music: ['เพลงสตริงฮิต 2026', 'joox ชาร์ตเพลงฮิต', 't-pop เพลงใหม่', 'คอนเสิร์ตใหญ่'],
+            finance: ['หุ้นไทย set วันนี้', 'ราคาทองคำวันนี้', 'กองทุนรวมแนะนำ', 'คริปโตเคอร์เรนซี'],
+            food: ['หม่อมถนัดแดก ล่าสุด', 'กินตามสั่งเยาวราช', 'ร้านเด็ดเมืองไทย', 'ส้มตำ บุฟเฟต์'],
+            shorts: ['#shorts ไทยฮิต', 'คลิปสั้นตลกไทย', 'ไวรัลติ๊กต๊อกไทย', 'ละครคุณธรรมสั้น']
         },
         TW: {
-            all: ['台灣發燒影片', '熱門發燒', '即時發燒', '熱門話題 台灣'],
-            entertainment: ['熱門綜藝 台灣', '木曜4超玩', '綜藝大熱門', '明星專訪'],
-            news: ['TVBS新聞 即時', '三立新聞網', '台灣即時焦點', '頭條新聞'],
-            gaming: ['遊戲實況 台灣', '英雄聯盟 精華', 'Steam 遊戲推薦', '手遊排行'],
-            music: ['華語流行音樂', 'KKBOX 風雲榜', '新歌推薦', '現場演唱'],
-            finance: ['台股分析', 'ETF 存股推薦', '被動收入', '美股投資 台灣'],
-            food: ['台灣夜市美食', '大胃王 吃播', '家常菜食譜', '米其林餐廳開箱'],
-            shorts: ['#shorts 台灣', '爆笑短影音', '熱門短片', '抖音熱門']
+            all: ['台灣今日熱搜', '發燒影片排行', '全台焦點話題', '即時發燒精選'],
+            entertainment: ['木曜4超玩 一日系列', '綜藝大熱門 精華', '賀瓏夜夜秀', '台劇 幕後花絮'],
+            news: ['TVBS 新聞直播', '東森新聞 關鍵時刻', '三立LIVE新聞', '公視晚間新聞'],
+            gaming: ['英雄聯盟 職業聯賽 LCP', '館長 實況精華', 'Steam 大作實況', '傳說對決 冠軍賽'],
+            music: ['KKBOX 華語新歌週榜', '告五人 最新現場', '周杰倫 經典巡演', '金曲獎 舞台 live'],
+            finance: ['台股盤後分析', '高股息 ETF 0056 00878', '台積電 法說會重點', '房市現況分析'],
+            food: ['千千進食中 大胃王', 'Joeman 奢華平價對決', '台灣必吃夜市美食', '米其林必比登推薦'],
+            shorts: ['#shorts 台灣熱門', '抖音神曲 短影音', '街訪 爆笑短片', '迷因短片']
         },
         IN: {
-            all: ['trending in india today', 'viral videos india', 'latest news hindi', 'top trending in'],
-            entertainment: ['bollywood news', 'kapil sharma show', 'bigg boss latest', 'movie trailer hindi'],
-            news: ['aaj tak live news', 'ndtv india', 'zee news headlines', 'india news today'],
-            gaming: ['bgmi gameplay', 'total gaming live', 'free fire india', 'gta 5 roleplay hindi'],
-            music: ['new hindi songs 2026', 't-series latest', 'punjabi hits', 'bollywood romantic songs'],
-            finance: ['share market today', 'how to invest money india', 'mutual funds sip', 'crypto india'],
-            food: ['indian street food', 'village cooking channel', 'quick recipes hindi', 'desi food review'],
-            shorts: ['#shorts india', 'funny shorts hindi', 'viral desi shorts', 'trending comedy']
+            all: ['trending in india right now', 'breaking news today india', 'viral videos hindi', 'hot topics india'],
+            entertainment: ['the kapil sharma show clips', 'bollywood latest interviews', 'bigg boss daily episode review', 'south movie dubbed'],
+            news: ['aaj tak live broadcast', 'ndtv india headlines', 'india today live update', 'zee news dna'],
+            gaming: ['bgmi tournament live', 'total gaming live gameplay', 'techno gamerz gta 5', 'carryminati gaming'],
+            music: ['t-series hits 2026', 'arijit singh live concert', 'punjabi top 20 songs', 'bollywood romantic songs'],
+            finance: ['nifty 50 share market live', 'gold rate today india', 'best sip mutual funds', 'budget economic analysis'],
+            food: ['delhi street food junction', 'village food factory cooking', 'ranveer brar recipes', 'indian royal thali review'],
+            shorts: ['#shorts india trending', 'desi comedy shorts', 'motivational shorts hindi', 'viral reel songs']
         },
         BR: {
-            all: ['em alta brasil', 'noticias hoje brasil', 'videos virais brasil', 'top tendencias'],
-            entertainment: ['podpah cortes', 'flow podcast', 'bbb 2026 cortes', 'famosos fofoca'],
-            news: ['g1 noticias hoje', 'jornal nacional', 'noticias urgentes brasil', 'politica brasil'],
-            gaming: ['gameplay brasil', 'free fire highlights br', 'loud cortes', 'roblox brasil'],
-            music: ['musicas mais tocadas brasil', 'funk 2026', 'sertanejo universitario', 'trap brasil'],
-            finance: ['investimentos para iniciantes', 'bolsa de valores ibovespa', 'como ganhar dinheiro na internet', 'cripto brasil'],
-            food: ['comida de rua brasil', 'receitas faceis e rapidas', 'mukbang brasileiro', 'churrasco perfeito'],
-            shorts: ['#shorts brasil', 'videos engraçados shorts', 'dancinhas tiktok brasil', 'trolling shorts']
+            all: ['em alta brasil hoje', 'noticias urgentes brasil', 'videos mais vistos brasil', 'assuntos do momento'],
+            entertainment: ['podpah cortes de hoje', 'flow podcast entrevista', 'cortes bbb 2026', 'bastidores da tv'],
+            news: ['g1 globo noticias ao vivo', 'jornal da record hoje', 'band jornalismo ao vivo', 'cnn brasil noticias'],
+            gaming: ['nobru free fire gameplay', 'coringa loud cortes', 'roblox brasil ao vivo', 'jogos lancamento'],
+            music: ['spotify top brasil 50', 'funk bh lancamentos 2026', 'sertanejo ao vivo hits', 'anitta novo clipe'],
+            finance: ['ibovespa hoje analise', 'onde investir 2026', 'dolar hoje cotacao', 'fundos imobiliarios fiis'],
+            food: ['masterchef brasil melhores momentos', 'receitas do rodrigo hilbert', 'churrasco bbq perfeito', 'comida de rua sao paulo'],
+            shorts: ['#shorts brasil engracados', 'dancinhas tiktok brasil', 'pegadinhas shorts', 'cortes virais']
         },
         DE: {
-            all: ['trends deutschland', 'nachrichten heute deutschland', 'virale videos de', 'aktuelle themen'],
-            entertainment: ['deutsche unterhaltung', 'comedy de', 'late night berlin', 'promi news'],
-            news: ['tagesschau live', 'welt nachrichten', 'zdf heute', 'aktuelle nachrichten'],
-            gaming: ['gaming de', 'montanablack highlights', 'paluten gameplay', 'neue spiele 2026'],
-            music: ['deutsche charts top 100', 'deutschrap 2026', 'aktuelle hits', 'musikvideos neu'],
-            finance: ['finanzen und investieren', 'aktien tipps deutschland', 'etf sparplan', 'krypto deutsch'],
-            food: ['deutsches street food', 'schnelle rezepte kochen', 'food review de', 'doener test'],
-            shorts: ['#shorts deutschland', 'lustige shorts', 'viral trend de', 'tik tok trends']
+            all: ['aktuelle trends deutschland', 'nachrichten heute live de', 'meistgesehene videos', 'brennpunkt themen'],
+            entertainment: ['late night berlin highlights', 'tv total beste momente', 'deutsche promis backstage', 'comedy club live'],
+            news: ['tagesschau 20 uhr heute', 'zdf heute journal live', 'welt nachrichtensender', 'spiegel tv reportage'],
+            gaming: ['montanablack live highlights', 'gronkh gameplay', 'trymacs clips', 'neue pc spiele 2026'],
+            music: ['deutsche single charts top 100', 'deutschrap neuheiten 2026', 'rammstein live tour', 'shirin david neu'],
+            finance: ['dax live analyse', 'finanzfluss etf sparplan', 'immobilienpreise deutschland', 'zinsen ezb prognose'],
+            food: ['doener test deutschland', 'sebastian lege zdf besseresser', 'einfache rezepte kochen', 'street food festival de'],
+            shorts: ['#shorts deutschland trending', 'lustige clips de', 'tiktok trends de', 'virale videos de']
         }
     };
 
@@ -2243,7 +2311,7 @@ ${topic}`;
 
     function extractBestSearchQuery(rawTitle, channelTitle) {
         const cleaned = cleanVideoTitle(rawTitle);
-        // 짧고 명확한 키워드 생성 (앞부분 4단어 내외)
+        // 짧고 명확한 키워드 생성 (앞부분 3단어 내외)
         const words = cleaned.split(/\s+/).filter(w => w.length >= 2);
         if (words.length > 0) {
             return words.slice(0, 3).join(' ');
@@ -2251,6 +2319,7 @@ ${topic}`;
         return channelTitle || cleaned || rawTitle;
     }
 
+    // 🚀 [핵심 3단계 파이프라인] 실시간 트렌드 수집 엔진
     async function getCategoryRankingList(categoryKey, countryCode = 'KR') {
         const cacheKey = `${countryCode}_${categoryKey}`;
         if (TrendState.categoryData[cacheKey] && TrendState.categoryData[cacheKey].length > 0) {
@@ -2261,7 +2330,7 @@ ${topic}`;
         const countryInfo = SUPPORTED_COUNTRIES[countryCode] || SUPPORTED_COUNTRIES['KR'];
         let items = [];
 
-        // 1. YouTube Data API v3 MostPopular (해당 국가 실시간 1위~20위 급상승 영상 추출)
+        // 🥇 1단계: YouTube Data API v3 MostPopular (실시간 1위~20위 공식 급상승 영상 차트)
         if (AppState.ytKey) {
             try {
                 let url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=${countryCode}&maxResults=20&key=${AppState.ytKey}`;
@@ -2296,11 +2365,32 @@ ${topic}`;
             }
         }
 
-        // 2. Fallback: Google/YouTube Suggestion API (국가별 고유 언어 쿼리 기반)
+        // 🥈 2단계: Google Trends 실시간 핫토픽 RSS 피드 (API 키 없는 방문자를 위한 실제 실시간 사회 핫이슈)
+        if (items.length < 5 && (categoryKey === 'all' || categoryKey === 'news' || categoryKey === 'finance')) {
+            try {
+                const googleTrends = await fetchGoogleTrendsTopics(countryCode);
+                if (googleTrends.length > 0) {
+                    items = googleTrends.slice(0, 20).map((t, idx) => ({
+                        rank: idx + 1,
+                        displayTitle: t.title,
+                        shortTitle: t.title,
+                        searchQuery: t.title,
+                        channelTitle: `${countryInfo.flag} ${countryInfo.name} 실시간 검색 트렌드` + (t.approxTraffic ? ` (${t.approxTraffic})` : ''),
+                        viewCount: null,
+                        countryCode: countryCode,
+                        countryFlag: countryInfo.flag
+                    }));
+                }
+            } catch (err) {
+                console.warn(`[GoogleTrends] ${countryCode} 수집 실패:`, err);
+            }
+        }
+
+        // 🥉 3단계: 스마트 시드 기반 YouTube Suggestion JSONP (카테고리별 특화 + 블랙리스트 필터링)
         if (items.length < 5) {
             try {
                 const countryQueries = COUNTRY_CATEGORY_QUERIES[countryCode] || COUNTRY_CATEGORY_QUERIES['US'];
-                const queryList = countryQueries[categoryKey] || countryQueries['all'] || ['trending', 'viral'];
+                const queryList = countryQueries[categoryKey] || countryQueries['all'] || ['trending', 'viral news'];
                 
                 const results = await Promise.all(
                     queryList.map(q => fetchYoutubeSuggestJsonp(q, countryCode, countryInfo.lang))
@@ -2309,36 +2399,38 @@ ${topic}`;
                 const merged = [];
                 results.forEach(arr => {
                     arr.forEach(kw => {
-                        if (!merged.includes(kw) && kw.length >= 2) {
+                        if (!merged.includes(kw) && kw.length >= 2 && !isBlacklistedKeyword(kw)) {
                             merged.push(kw);
                         }
                     });
                 });
 
-                items = merged.slice(0, 20).map((kw, idx) => ({
-                    rank: idx + 1,
-                    displayTitle: kw,
-                    shortTitle: kw,
-                    searchQuery: kw,
-                    channelTitle: `${countryInfo.flag} ${countryInfo.name} 급상승`,
-                    viewCount: null,
-                    countryCode: countryCode,
-                    countryFlag: countryInfo.flag
-                }));
+                if (merged.length > 0) {
+                    items = merged.slice(0, 20).map((kw, idx) => ({
+                        rank: idx + 1,
+                        displayTitle: kw,
+                        shortTitle: kw,
+                        searchQuery: kw,
+                        channelTitle: `${countryInfo.flag} ${countryInfo.name} 실시간 핫토픽`,
+                        viewCount: null,
+                        countryCode: countryCode,
+                        countryFlag: countryInfo.flag
+                    }));
+                }
             } catch (err) {
                 console.warn(`[SuggestFallback] ${countryCode} 수집 실패:`, err);
             }
         }
 
-        // 3. Fallback 기본값 (네트워크 장애 대비)
+        // 4단계: 최후의 Fallback (오프라인/네트워크 차단 대비)
         if (items.length === 0) {
-            const fallbackList = COUNTRY_CATEGORY_QUERIES[countryCode]?.all || ['Trending Topic 1', 'Trending Topic 2', 'Trending Topic 3'];
+            const fallbackList = COUNTRY_CATEGORY_QUERIES[countryCode]?.[categoryKey] || COUNTRY_CATEGORY_QUERIES[countryCode]?.all || ['Trending Topic 1', 'Trending Topic 2'];
             items = fallbackList.map((t, idx) => ({
                 rank: idx + 1,
                 displayTitle: t,
                 shortTitle: t,
                 searchQuery: t,
-                channelTitle: countryInfo.name,
+                channelTitle: `${countryInfo.flag} ${countryInfo.name}`,
                 viewCount: null,
                 countryCode: countryCode,
                 countryFlag: countryInfo.flag
@@ -2448,7 +2540,7 @@ ${topic}`;
             itemDiv.innerHTML = `
                 <div class="rank-num ${rankClass}">${rank}</div>
                 <div class="rank-kw">
-                    <div style="font-weight:700; color:#fff; line-height:1.3;">${escapeHtml(item.displayTitle)}</div>
+                    <div style="font-weight:700; color:#fff; line-height:1.3;">${escapeHtml(displayTitle)}</div>
                     <div style="font-size:12px; color:#9ca3af; margin-top:2px;">
                         <span>${item.countryFlag || '🌐'} ${catName}</span>
                         ${channelStr}
