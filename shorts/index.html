@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>쇼츠 급등 — 떡상 검색기</title>
+  <link rel="stylesheet" href="../assets/radar.css">
+</head>
+<body data-src="../data/kr-latest.json" data-embed="RADAR_EMBED_KR" data-filter="shorts">
+  <div class="wrap">
+    <header>
+      <h1>쇼츠 급등</h1>
+      <p class="sub">같은 한국 캐시에서 쇼츠만 보여 줍니다. 추가 API를 쓰지 않습니다.</p>
+    </header>
+    <nav>
+      <a href="../">오늘 KR</a>
+      <a href="../keywords/">키워드</a>
+      <a href="./" aria-current="page">쇼츠</a>
+      <a href="../vs-yesterday/">어제 대비</a>
+      <a href="../jp/">일본</a>
+    </nav>
+    <p id="status" class="sub"></p>
+    <p id="facts" class="facts"></p>
+    <div id="ad-slot-board" aria-hidden="true"></div>
+    <div class="sort-bar">
+      <button type="button" data-sort="vph" aria-pressed="true">VPH</button>
+      <button type="button" data-sort="viralScore" aria-pressed="false">기여도</button>
+    </div>
+    <div id="video-list" class="list"></div>
+    <div id="ad-slot-action" aria-hidden="true"></div>
+    <footer><a href="../studio.html">도구(키 필요)</a></footer>
+  </div>
+  <script src="../data/embed-kr.js"></script>
+  <script src="../assets/config.js"></script>
+  <script src="../assets/radar.js"></script>
+</body>
+</html>
