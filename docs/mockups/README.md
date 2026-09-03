@@ -5,6 +5,7 @@
 | 파일 | 용도 |
 |------|------|
 | [work-five.html](work-five.html) | **조사 도구 5종** (워크벤치 / 검색 우선 / 브리핑 / 콘텐츠 표 / 엄지 스택) |
+| `work_{bench,search,brief,table,thumb}.png` | 조사 도구 스크린샷 |
 | [../ux-research.md](../ux-research.md) | 이전 5종이 실패한 이유, 벤치마크, 편의성 원칙 |
 | [studio-desktop.html](studio-desktop.html) | Desktop 1440, CTA 클릭 검증 |
 | [studio-phone.html](studio-phone.html) | Phone 390 |
