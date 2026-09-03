@@ -47,5 +47,6 @@ YouTube Insight는 유튜브 알고리즘을 역공학하여 떡상 가능성이
 - 로컬: `index.html`을 브라우저로 열어도 됩니다. 또는 `python3 -m http.server 8080` 후 http://127.0.0.1:8080/
 - 원클릭 실행: `./run-local.sh` 를 실행하면 로컬 폴더에서 `python3 -m http.server 8080` 을 띄우고 기본으로 `studio.html` 을 브라우저에서 엽니다. 다른 페이지를 열려면 `./run-local.sh index.html` 처럼 인자를 넘기세요.
 - 더 바로 실행: `./start-studio.sh` 를 실행하면 항상 `studio.html` 을 엽니다. Linux 데스크톱에서는 `YouTubeInsightStudio.desktop` 파일을 더블클릭해서 실행할 수 있습니다.
+- 반응형 UI: `assets/responsive.css` 가 스튜디오와 공개 보드에 공통 적용됩니다 (768px/480px 브레이크포인트). 레퍼런스는 [`docs/ui-references.md`](docs/ui-references.md).
 - GitHub Pages: https://heymybiz.github.io/youtubeinsight/  (이 브랜치가 `main`에 반영된 뒤)
 - 광고: `assets/config.js` 의 `ADSENSE_CLIENT` 가 비어 있으면 스크립트를 로드하지 않습니다. 팝언더 없음.

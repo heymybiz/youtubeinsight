@@ -1,5 +1,7 @@
 .DS_Store
 Thumbs.db
 *.log
+.local-server.pid
+.local-server.log
 __pycache__/
 *.pyc
