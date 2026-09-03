@@ -2,6 +2,8 @@
 
 반응형·접근성 개선에 참고한 오픈소스입니다. 전체 프로젝트를 그대로 설치하지 않고, **Vanilla JS SPA와 호환되는 CSS 패턴만** `assets/responsive.css`에 반영했습니다.
 
+제품 요구와 화면별 이식 규칙은 [`PRD-responsive-ui.md`](PRD-responsive-ui.md) 를 따른다.
+
 ## 적용함
 
 ### [mbparks/YouTubeLedger](https://github.com/mbparks/YouTubeLedger)
