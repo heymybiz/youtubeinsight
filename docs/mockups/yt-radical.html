@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>유튜브 채널 벤치 · 파격 5종</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --raised: #212121;
+      --chip: #272727;
+      --line: #3f3f3f;
+      --text: #f1f1f1;
+      --mute: #aaaaaa;
+      --red: #ff0000;
+      --red-2: #cc0000;
+      --blue: #3ea6ff;
+      --gold: #e5c04b;
+      --press: #000;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: #000; color: var(--text); font-family: Roboto, Pretendard, system-ui, sans-serif; }
+    button { font-family: inherit; cursor: pointer; }
+    .hide { display: none !important; }
+    html.shot .picker { display: none !important; }
+
+    .picker {
+      position: sticky; top: 0; z-index: 70;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+      padding: 8px 12px; background: rgba(15,15,15,.94);
+      border-bottom: 1px solid #272727; backdrop-filter: blur(12px);
+    }
+    .picker strong { font-size: 12px; letter-spacing: .04em; }
+    .picker a { color: var(--blue); font-size: 12px; }
+    .skins { display: flex; gap: 6px; flex-wrap: wrap; }
+    .skins button {
+      background: #272727; color: #fff; border: 0; border-radius: 999px;
+      padding: 8px 12px; font-size: 12px; font-weight: 700;
+    }
+    .skins button[aria-pressed="true"] { background: #fff; color: #111; }
+    .hint { width: 100%; margin: 0; font-size: 11px; color: var(--gold); }
+
+    .press { box-shadow: 0 3px 0 #000; transition: transform .08s, box-shadow .08s; }
+    .press:active { transform: translateY(2px); box-shadow: 0 1px 0 #000; }
+
+    .logo { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 20px; letter-spacing: -.05em; }
+    .yt-mark { width: 32px; height: 22px; flex: 0 0 auto; }
+    .yt-search {
+      display: flex; flex: 1; max-width: 640px; margin: 0 auto;
+    }
+    .yt-search input {
+      flex: 1; background: #121212; border: 1px solid #303030; border-right: 0;
+      border-radius: 40px 0 0 40px; color: #fff; padding: 10px 18px; font-size: 16px; outline: none;
+    }
+    .yt-search-go {
+      width: 64px; border: 1px solid #303030; border-radius: 0 40px 40px 0;
+      background: #222; color: #fff;
+    }
+    .mic {
+      width: 40px; height: 40px; border-radius: 50%; border: 0; background: #272727; color: #fff; margin-left: 8px;
+    }
+    .masthead {
+      display: flex; align-items: center; gap: 12px; padding: 8px 16px;
+      background: #0f0f0f; position: sticky; top: 0; z-index: 5;
+    }
+    .icon-btn {
+      width: 40px; height: 40px; border: 0; border-radius: 50%; background: transparent; color: #fff; font-size: 16px;
+    }
+    .icon-btn:hover { background: #272727; }
+    .avatar-sm {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: linear-gradient(135deg, #ff0033, #7a0010);
+    }
+    .chips { display: flex; gap: 8px; overflow-x: auto; padding: 8px 0; scrollbar-width: none; }
+    .chips::-webkit-scrollbar { display: none; }
+    .chip {
+      flex: 0 0 auto; background: var(--chip); color: var(--text); border: 0; border-radius: 8px;
+      padding: 8px 12px; font-weight: 500; font-size: 14px;
+    }
+    .chip.on { background: #fff; color: #111; }
+    .chip.gold { outline: 1px solid var(--gold); color: var(--gold); background: #1a1608; }
+    .btn-red { background: var(--red); color: #fff; border: 0; border-radius: 18px; padding: 10px 16px; font-weight: 700; }
+    .btn-white { background: #fff; color: #111; border: 0; border-radius: 18px; padding: 10px 16px; font-weight: 700; }
+    .btn-ghost { background: rgba(255,255,255,.1); color: #fff; border: 0; border-radius: 18px; padding: 10px 16px; font-weight: 700; }
+    .dur, .liveb, .prog {
+      position: absolute; font-weight: 700; color: #fff; z-index: 2;
+    }
+    .dur {
+      right: 6px; bottom: 6px; background: #000; font-size: 12px; padding: 1px 4px; border-radius: 4px;
+    }
+    .liveb {
+      left: 8px; top: 8px; background: var(--red); font-size: 11px; letter-spacing: .08em;
+      padding: 3px 6px; border-radius: 4px; animation: livepulse 1.6s ease-in-out infinite;
+    }
+    @keyframes livepulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255,0,0,.55); }
+      50% { box-shadow: 0 0 0 6px rgba(255,0,0,0); }
+    }
+    .prog {
+      left: 0; right: 0; bottom: 0; height: 4px; background: #444; padding: 0; position: absolute;
+    }
+    .prog i { display: block; height: 100%; background: var(--red); }
+    .thumb {
+      position: relative; overflow: hidden; background: #111 center/cover no-repeat;
+    }
+    .thumb::before {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,.45));
+      pointer-events: none;
+    }
+    .rail { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x mandatory; }
+    .rail > * { scroll-snap-align: start; flex: 0 0 auto; }
+
+    .modal {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,.72); z-index: 90;
+      align-items: center; justify-content: center;
+    }
+    .modal.on { display: flex; }
+    .sheet { background: #212121; padding: 20px; border-radius: 12px; width: min(420px, 92vw); }
+    #toast {
+      position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+      background: #fff; color: #111; padding: 8px 14px; border-radius: 999px;
+      font-weight: 700; font-size: 12px; display: none; z-index: 95;
+    }
+
+    /* ========== 1 HOME MAX ========== */
+    .home { display: grid; grid-template-columns: 72px 1fr; min-height: 100dvh; background: #0f0f0f; }
+    .mini-nav { padding: 8px 4px; display: flex; flex-direction: column; gap: 2px; border-right: 1px solid #1a1a1a; }
+    .mini-nav span {
+      display: grid; place-items: center; height: 74px; font-size: 10px; color: #aaa;
+      border-radius: 12px; text-align: center; line-height: 1.25; gap: 4px;
+    }
+    .mini-nav span b { font-size: 20px; font-weight: 400; }
+    .mini-nav span.on { background: #272727; color: #fff; }
+    .home-main { padding: 0 20px 48px; min-width: 0; }
+    .break {
+      margin: 8px 0 14px; overflow: hidden; border-radius: 10px;
+      background: linear-gradient(90deg, #3a0000, #1a0000 40%, #0f0f0f);
+      border: 1px solid #5a1010; display: flex; align-items: center; gap: 10px; padding: 8px 12px;
+    }
+    .break em {
+      font-style: normal; background: var(--red); font-size: 11px; font-weight: 900;
+      letter-spacing: .12em; padding: 4px 8px; border-radius: 4px; flex: 0 0 auto;
+    }
+    .marquee { overflow: hidden; flex: 1; }
+    .marquee i {
+      display: inline-block; white-space: nowrap; font-style: normal; font-size: 13px; font-weight: 700;
+      animation: marquee 18s linear infinite;
+    }
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .shorts-h { display: flex; gap: 10px; overflow-x: auto; padding: 4px 0 12px; }
+    .short-card { width: 158px; flex: 0 0 auto; }
+    .short-card .thumb { width: 158px; height: 280px; border-radius: 12px; }
+    .short-card p { margin: 8px 0 0; font-size: 14px; font-weight: 500; line-height: 1.3; }
+    .sec-h { display: flex; align-items: center; gap: 8px; margin: 18px 0 10px; }
+    .sec-h h3 { margin: 0; font-size: 20px; }
+    .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px 12px; }
+    .vcard h3 { font-size: 16px; margin: 10px 0 4px; font-weight: 500; line-height: 1.3; }
+    .vcard .meta { font-size: 13px; color: var(--mute); }
+    .vcard .thumb { aspect-ratio: 16/9; border-radius: 12px; transition: transform .2s; }
+    .vcard:hover .thumb { transform: scale(1.03); }
+    .vmeta { display: grid; grid-template-columns: 36px 1fr; gap: 10px; margin-top: 10px; }
+    .vmeta .av {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, #444, #111);
+    }
+    .live-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .live-card .thumb { aspect-ratio: 16/9; border-radius: 12px; }
+    .live-card h3 { margin: 8px 0 0; font-size: 15px; }
+    @media (max-width: 980px) {
+      .home { grid-template-columns: 1fr; }
+      .mini-nav { flex-direction: row; overflow-x: auto; border: 0; }
+      .grid4, .live-row { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ========== 2 CHANNEL WORLD ========== */
+    #skin-channel { background: #0f0f0f; min-height: 100dvh; }
+    .banner {
+      height: min(38vw, 340px);
+      background:
+        linear-gradient(180deg, transparent 30%, #0f0f0f 100%),
+        linear-gradient(115deg, rgba(180,0,0,.55) 0%, transparent 42%),
+        url("https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=2000&q=70") center/cover;
+      position: relative;
+    }
+    .banner .tag {
+      position: absolute; top: 20px; left: 40px; z-index: 2;
+    }
+    .ch-overlap {
+      margin-top: -72px; padding: 0 40px; display: grid;
+      grid-template-columns: 168px 1fr auto; gap: 20px; align-items: end;
+      position: relative; z-index: 2;
+    }
+    .avatar-xl {
+      width: 160px; height: 160px; border-radius: 50%;
+      border: 6px solid #0f0f0f;
+      background: url("https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=400&q=70") center/cover;
+      box-shadow: 0 0 0 3px var(--red);
+      animation: livepulse 2s ease-in-out infinite;
+    }
+    .ch-overlap h2 { margin: 0 0 6px; font-size: 36px; font-weight: 900; letter-spacing: -.04em; }
+    .tabs-ch {
+      display: flex; gap: 28px; padding: 16px 40px 0; border-bottom: 1px solid #272727; margin-top: 18px;
+    }
+    .tabs-ch button { background: none; border: 0; color: #aaa; font-weight: 700; padding: 12px 0 14px; font-size: 16px; }
+    .tabs-ch button.on { color: #fff; box-shadow: inset 0 -3px 0 #fff; }
+    .featured {
+      display: grid; grid-template-columns: 1.4fr .9fr; gap: 24px; padding: 28px 40px;
+    }
+    .featured .thumb { aspect-ratio: 16/9; border-radius: 16px; min-height: 280px; }
+    .featured h3 { font-size: 28px; margin: 0 0 10px; font-weight: 900; line-height: 1.15; }
+    .shelf { padding: 8px 40px 28px; }
+    .shelf h3 { margin: 0 0 12px; font-size: 20px; }
+    .shelf-card { width: 280px; }
+    .shelf-card .thumb { width: 280px; height: 158px; border-radius: 12px; }
+    .vshort { width: 168px; }
+    .vshort .thumb { width: 168px; height: 298px; border-radius: 14px; }
+    .community {
+      margin: 0 40px 32px; background: #212121; border-radius: 16px; padding: 18px 20px; max-width: 720px;
+    }
+    @media (max-width: 900px) {
+      .ch-overlap, .featured { grid-template-columns: 1fr; padding-left: 16px; padding-right: 16px; }
+      .avatar-xl { width: 96px; height: 96px; }
+      .ch-overlap h2 { font-size: 24px; }
+    }
+
+    /* ========== 3 THEATER ========== */
+    #skin-theater {
+      min-height: 100dvh;
+      background:
+        radial-gradient(ellipse at 28% 18%, rgba(255,32,0,.38), transparent 46%),
+        radial-gradient(ellipse at 88% 70%, rgba(180,90,0,.22), transparent 42%),
+        #050505;
+    }
+    .theater-wrap { display: grid; grid-template-columns: 1.75fr .78fr; gap: 20px; padding: 12px 24px 48px; }
+    .player {
+      aspect-ratio: 16/9; border-radius: 14px; overflow: hidden; position: relative;
+      background: url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1800&q=70") center/cover;
+      box-shadow: 0 0 90px rgba(255,0,0,.28), 0 30px 80px rgba(0,0,0,.65);
+    }
+    .player .play {
+      position: absolute; inset: 0; display: grid; place-items: center;
+      background: radial-gradient(circle at 40% 40%, transparent, rgba(0,0,0,.5));
+    }
+    .player .play span {
+      width: 84px; height: 58px; background: var(--red); border-radius: 16px;
+      display: grid; place-items: center; box-shadow: 0 12px 40px rgba(255,0,0,.55);
+    }
+    .player .play span::after {
+      content: ""; border-left: 20px solid #fff; border-top: 12px solid transparent; border-bottom: 12px solid transparent; margin-left: 4px;
+    }
+    .chapters {
+      position: absolute; left: 12px; right: 12px; bottom: 14px; display: flex; gap: 6px; z-index: 3;
+    }
+    .chapters u {
+      text-decoration: none; flex: 1; height: 5px; background: rgba(255,255,255,.28); border-radius: 99px; overflow: hidden;
+    }
+    .chapters u:first-child { background: #fff; }
+    .watch-title { font-size: 22px; margin: 16px 0 10px; font-weight: 700; }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .pill {
+      background: #272727; border: 0; color: #fff; border-radius: 999px; padding: 8px 14px; font-weight: 700; font-size: 13px;
+    }
+    .desc {
+      background: rgba(39,39,39,.9); border-radius: 12px; padding: 14px 16px; margin-top: 14px; font-size: 14px; color: #ddd;
+    }
+    .related .item { display: grid; grid-template-columns: 168px 1fr; gap: 10px; margin-bottom: 12px; cursor: pointer; }
+    .related .item .thumb { height: 94px; border-radius: 10px; }
+    .related .item:hover { opacity: .85; }
+    .autoplay { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 13px; }
+    .toggle { width: 40px; height: 22px; background: #3ea6ff; border-radius: 99px; position: relative; }
+    .toggle::after { content: ""; position: absolute; width: 16px; height: 16px; background: #fff; border-radius: 50%; top: 3px; right: 3px; }
+    @media (max-width: 900px) { .theater-wrap { grid-template-columns: 1fr; } }
+
+    /* ========== 4 SHORTS WALL ========== */
+    #skin-shorts { background: #000; min-height: 100dvh; overflow: hidden; }
+    .wall {
+      min-height: calc(100dvh - 52px);
+      display: flex; align-items: center; justify-content: center; gap: 18px; padding: 12px;
+    }
+    .col {
+      width: 230px; height: min(78vh, 720px); border-radius: 18px; overflow: hidden; position: relative;
+      opacity: .38; transform: scale(.88); filter: blur(1px) saturate(.7);
+      transition: transform .25s, opacity .25s;
+    }
+    .col.mid {
+      width: min(420px, 42vw); height: min(86vh, 860px); opacity: 1; transform: scale(1); filter: none;
+      box-shadow: 0 0 80px rgba(255,0,0,.35), 0 24px 80px #000;
+    }
+    .col .copy { position: absolute; left: 16px; right: 72px; bottom: 24px; z-index: 2; }
+    .col .copy h2 { margin: 0 0 8px; font-size: 32px; font-weight: 900; text-shadow: 0 4px 18px #000; }
+    .side-act {
+      display: flex; flex-direction: column; gap: 16px; align-items: center; padding-bottom: 40px;
+    }
+    .side-act b {
+      width: 52px; height: 52px; border-radius: 50%; background: #272727; display: grid; place-items: center;
+      font-size: 11px; text-align: center; line-height: 1.15;
+    }
+    .side-act .red { background: var(--red); }
+    .sound {
+      margin-top: 10px; background: rgba(0,0,0,.45); border: 1px solid #444; border-radius: 999px;
+      padding: 8px 12px; font-size: 12px; display: inline-flex; gap: 6px;
+    }
+    @media (max-width: 800px) {
+      .col:not(.mid) { display: none; }
+      .col.mid { width: min(100%, 420px); }
+    }
+
+    /* ========== 5 CONTROL ROOM ========== */
+    #skin-studio { background: #0f0f0f; min-height: 100dvh; }
+    .studio-app { display: grid; grid-template-columns: 240px 1fr; min-height: 100dvh; }
+    .sidenav { background: #0f0f0f; border-right: 1px solid #272727; padding: 12px; }
+    .sidenav .ch-switch {
+      display: flex; gap: 10px; align-items: center; padding: 10px; border-radius: 12px; background: #212121; margin-bottom: 12px;
+    }
+    .sidenav button {
+      width: 100%; text-align: left; background: none; border: 0; color: var(--text);
+      padding: 10px 12px; border-radius: 10px; font-size: 14px;
+    }
+    .sidenav button.on { background: #272727; }
+    .dash { padding: 18px 22px 48px; }
+    .dash h1 { margin: 0 0 16px; font-size: 26px; }
+    .kpi {
+      display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 12px; margin-bottom: 18px;
+    }
+    .card {
+      background: #212121; border: 1px solid #3f3f3f; border-radius: 16px; padding: 16px;
+    }
+    .card h4 { margin: 0 0 8px; color: #aaa; font-size: 13px; font-weight: 500; }
+    .card .n { font-size: 32px; font-weight: 900; letter-spacing: -.04em; }
+    .spark { height: 64px; margin-top: 10px; background:
+      linear-gradient(#3ea6ff, #3ea6ff) 0 70%/100% 2px no-repeat,
+      radial-gradient(circle at 10% 60%, #3ea6ff 3px, transparent 4px),
+      radial-gradient(circle at 28% 40%, #3ea6ff 3px, transparent 4px),
+      radial-gradient(circle at 46% 55%, #3ea6ff 3px, transparent 4px),
+      radial-gradient(circle at 64% 22%, #3ea6ff 3px, transparent 4px),
+      radial-gradient(circle at 82% 30%, #3ea6ff 3px, transparent 4px),
+      radial-gradient(circle at 96% 18%, #ff0000 4px, transparent 5px);
+      border-radius: 8px;
+    }
+    .table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .table td { padding: 10px 8px; border-top: 1px solid #333; }
+    .table .t { width: 120px; height: 68px; border-radius: 8px; background-size: cover; }
+    .cinema {
+      margin-top: 22px; border-radius: 18px; overflow: hidden; position: relative; min-height: 420px;
+      background:
+        linear-gradient(90deg, #0f0f0f 0%, rgba(15,15,15,.2) 46%, transparent 70%),
+        url("https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=1800&q=70") center/cover;
+    }
+    .cinema-copy { position: relative; z-index: 1; padding: 48px 40px; max-width: 560px; }
+    .cinema-copy .kicker { color: var(--red); font-weight: 900; letter-spacing: .22em; font-size: 12px; }
+    .cinema-copy h2 { font-size: 64px; line-height: .88; margin: 8px 0 16px; font-weight: 900; }
+    .stats-float { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+    .stats-float span { background: rgba(0,0,0,.55); border: 1px solid #444; padding: 8px 12px; border-radius: 999px; font-size: 13px; }
+    .tv-tile { width: 260px; }
+    .tv-tile .thumb { width: 260px; height: 146px; border-radius: 6px; transition: transform .2s; }
+    .tv-tile:hover .thumb { transform: scale(1.08); outline: 3px solid #fff; outline-offset: 2px; }
+    @media (max-width: 980px) {
+      .studio-app { grid-template-columns: 1fr; }
+      .kpi { grid-template-columns: 1fr; }
+      .cinema-copy h2 { font-size: 40px; }
+    }
+
+    .t1 { background-image: linear-gradient(160deg,#7f1d1d,#1c1917 55%), url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=900&q=60"); }
+    .t2 { background-image: linear-gradient(160deg,#1e3a5f,#0f172a 50%), url("https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=900&q=60"); }
+    .t3 { background-image: linear-gradient(160deg,#14532d,#052e16 50%), url("https://images.unsplash.com/photo-1461896836934-ffe607ba6851?auto=format&fit=crop&w=900&q=60"); }
+    .t4 { background-image: linear-gradient(160deg,#1e1b4b,#0c0a1d 50%), url("https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?auto=format&fit=crop&w=900&q=60"); }
+    .t5 { background-image: linear-gradient(160deg,#7c2d12,#1c0a00 50%), url("https://images.unsplash.com/photo-1522163181145-16304e921fe6?auto=format&fit=crop&w=900&q=60"); }
+    .t6 { background-image: linear-gradient(160deg,#831843,#1a0410 50%), url("https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=900&q=60"); }
+    .t7 { background-image: linear-gradient(160deg,#0e7490,#082f49 50%), url("https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=900&q=60"); }
+    .t8 { background-image: linear-gradient(160deg,#854d0e,#1c1002 50%), url("https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=900&q=60"); }
+  </style>
+</head>
+<body>
+  <div class="picker">
+    <strong>유튜브 채널 벤치 · 파격 5종</strong>
+    <div class="skins">
+      <button type="button" data-skin="home" aria-pressed="true">1. 홈 맥스</button>
+      <button type="button" data-skin="channel">2. 채널 월드</button>
+      <button type="button" data-skin="theater">3. 시어터</button>
+      <button type="button" data-skin="shorts">4. 쇼츠 월</button>
+      <button type="button" data-skin="studio">5. 관제+TV</button>
+    </div>
+    <a href="yt-five.html">이전 레이아웃</a>
+    <a href="compare.html">톤 비교</a>
+    <a href="index.html">목록</a>
+    <p class="hint" id="skinHint"></p>
+  </div>
+
+  <section id="skin-home">
+    <div class="home">
+      <aside class="mini-nav" aria-label="가이드">
+        <span class="on"><b>⌂</b>홈</span>
+        <span><b>▶</b>쇼츠</span>
+        <span><b>＋</b>구독</span>
+        <span><b>◉</b>나</span>
+      </aside>
+      <div class="home-main">
+        <div class="masthead" style="position:relative;padding-left:0">
+          <div class="logo">
+            <svg class="yt-mark" viewBox="0 0 28 20" aria-hidden="true"><rect width="28" height="20" rx="5" fill="#FF0000"/><polygon points="11,5 11,15 20,10" fill="#fff"/></svg>
+            Insight
+          </div>
+          <div class="yt-search">
+            <input id="kw-home" placeholder="검색">
+            <button class="yt-search-go press" type="button">검색</button>
+          </div>
+          <button class="mic" type="button" title="음성">🎤</button>
+          <button class="btn-red press gold-btn" type="button">황금키워드</button>
+          <button class="icon-btn" type="button">＋</button>
+          <button class="icon-btn" type="button">🔔</button>
+          <div class="avatar-sm"></div>
+        </div>
+        <div class="chips">
+          <button class="chip on" type="button">전체</button>
+          <button class="chip" type="button">실시간</button>
+          <button class="chip" type="button">음악</button>
+          <button class="chip" type="button">게임</button>
+          <button class="chip" type="button">뉴스</button>
+          <button class="chip" type="button">스포츠</button>
+          <button class="chip gold" type="button" data-q="민생회복 소비쿠폰">민생회복 소비쿠폰</button>
+          <button class="chip gold" type="button" data-q="용적률">용적률</button>
+          <button class="chip gold" type="button" data-q="여자 멀리뛰기">여자 멀리뛰기</button>
+          <button class="chip" type="button">최근에 업로드된 동영상</button>
+        </div>
+        <div class="break ticker-btn" role="button">
+          <em>LIVE</em>
+          <div class="marquee"><i>1 용적률 기여도 820%&nbsp;&nbsp;·&nbsp;&nbsp;2 민생회복 소비쿠폰 VPH 14.2K&nbsp;&nbsp;·&nbsp;&nbsp;3 여자 멀리뛰기&nbsp;&nbsp;·&nbsp;&nbsp;4 여자 배구&nbsp;&nbsp;·&nbsp;&nbsp;5 암벽등반&nbsp;&nbsp;·&nbsp;&nbsp;1 용적률 기여도 820%&nbsp;&nbsp;·&nbsp;&nbsp;2 민생회복 소비쿠폰 VPH 14.2K&nbsp;&nbsp;·&nbsp;&nbsp;</i></div>
+        </div>
+        <div class="sec-h">
+          <svg class="yt-mark" viewBox="0 0 28 20" width="22" height="16"><rect width="28" height="20" rx="5" fill="#FF0000"/><polygon points="11,5 11,15 20,10" fill="#fff"/></svg>
+          <h3>Shorts</h3>
+        </div>
+        <div class="shorts-h">
+          <article class="short-card"><div class="thumb t1"><span class="liveb">급등</span></div><p>용적률 30초 컷</p></article>
+          <article class="short-card"><div class="thumb t2"></div><p>소비쿠폰 실사용</p></article>
+          <article class="short-card"><div class="thumb t3"></div><p>멀리뛰기 리액션</p></article>
+          <article class="short-card"><div class="thumb t4"></div><p>배구 하이라이트</p></article>
+          <article class="short-card"><div class="thumb t5"></div><p>암벽등반 클라이밍</p></article>
+          <article class="short-card"><div class="thumb t6"></div><p>오늘 키워드 모음</p></article>
+        </div>
+        <div class="sec-h"><h3>이어보기</h3></div>
+        <div class="rail">
+          <article class="vcard" style="width:320px"><div class="thumb t7"><span class="dur">12:04</span><span class="prog"><i style="width:72%"></i></span></div><h3>용적률 하나로 집값이 갈렸다</h3></article>
+          <article class="vcard" style="width:320px"><div class="thumb t2"><span class="dur">8:21</span><span class="prog"><i style="width:31%"></i></span></div><h3>소비쿠폰 쓰는 법 전말</h3></article>
+          <article class="vcard" style="width:320px"><div class="thumb t8"><span class="dur">22:10</span><span class="prog"><i style="width:54%"></i></span></div><h3>여자 배구 하이라이트</h3></article>
+        </div>
+        <div class="sec-h"><h3>지금 라이브</h3></div>
+        <div class="live-row ticker-btn">
+          <article class="live-card"><div class="thumb t1"><span class="liveb">LIVE</span></div><h3>종합 급등 관제</h3><div class="meta" style="color:#aaa;font-size:13px">시청 1.2만 · KR</div></article>
+          <article class="live-card"><div class="thumb t3"><span class="liveb">LIVE</span></div><h3>스포츠 카테고리</h3><div class="meta" style="color:#aaa;font-size:13px">시청 4.8천</div></article>
+          <article class="live-card"><div class="thumb t6"><span class="liveb">LIVE</span></div><h3>키워드 워룸</h3><div class="meta" style="color:#aaa;font-size:13px">시청 2.1천</div></article>
+        </div>
+        <div class="sec-h"><h3>급등 영상</h3></div>
+        <div class="grid4">
+          <article class="vcard"><div class="thumb t1"><span class="dur">12:04</span></div><div class="vmeta"><div class="av"></div><div><h3>용적률 하나로 집값이 갈렸다</h3><div class="meta">급등 · 기여도 820%</div></div></div></article>
+          <article class="vcard"><div class="thumb t2"><span class="dur">8:21</span></div><div class="vmeta"><div class="av"></div><div><h3>소비쿠폰 쓰는 법 전말</h3><div class="meta">VPH 14.2K · 조회 96만</div></div></div></article>
+          <article class="vcard"><div class="thumb t3"><span class="dur">0:48</span></div><div class="vmeta"><div class="av"></div><div><h3>멀리뛰기 국가대표 리액션</h3><div class="meta">쇼츠 · 조회 210만</div></div></div></article>
+          <article class="vcard"><div class="thumb t4"><span class="dur">22:10</span></div><div class="vmeta"><div class="av"></div><div><h3>여자 배구 하이라이트</h3><div class="meta">조회 286만</div></div></div></article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="skin-channel" class="hide">
+    <div class="banner">
+      <div class="tag"><span class="liveb">LIVE · KR 레이더</span></div>
+    </div>
+    <div class="ch-overlap">
+      <div class="avatar-xl"></div>
+      <div>
+        <h2>YouTube Insight</h2>
+        <div style="color:#aaa">@insight · 구독자 12.8만 · 동영상 1,284</div>
+        <div style="color:#ddd;margin-top:6px;max-width:52ch">한국에서 지금 터지는 한 편. 키는 브라우저에만. 채널처럼 구독하지 말고 순위를 구독하세요.</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;padding-bottom:8px">
+        <button class="btn-red press ticker-btn" type="button">구독</button>
+        <button class="btn-white press" type="button">가입</button>
+        <button class="btn-ghost press gold-btn" type="button">황금키워드</button>
+      </div>
+    </div>
+    <div class="tabs-ch">
+      <button class="on" type="button">홈</button>
+      <button type="button">동영상</button>
+      <button type="button">숏츠</button>
+      <button type="button">재생목록</button>
+      <button type="button">커뮤니티</button>
+      <button type="button">정보</button>
+    </div>
+    <div class="featured">
+      <div class="thumb t1 ticker-btn"><span class="liveb">추천</span><span class="dur">12:04</span></div>
+      <div>
+        <div style="color:#f66;font-weight:900;letter-spacing:.14em;font-size:12px">FEATURED · 급등 1위</div>
+        <h3>용적률 — 알고리즘이 지금 이 단어를 씹고 있다</h3>
+        <p style="color:#aaa;line-height:1.5">큰 채널 홈의 피처드 트레일러. 왼쪽은 본편, 오른쪽은 왜 이 키워드인지. 재생 대신 순위.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
+          <button class="btn-red press ticker-btn" type="button">1위부터 보기</button>
+          <button class="btn-ghost press gold-btn" type="button">태그로 파기</button>
+        </div>
+      </div>
+    </div>
+    <div class="shelf">
+      <h3>인기 급상승</h3>
+      <div class="rail ticker-btn">
+        <div class="shelf-card"><div class="thumb t1"><span class="liveb">1</span></div><p>용적률</p></div>
+        <div class="shelf-card"><div class="thumb t2"><span class="dur">8:21</span></div><p>민생회복 소비쿠폰</p></div>
+        <div class="shelf-card"><div class="thumb t3"></div><p>여자 멀리뛰기</p></div>
+        <div class="shelf-card"><div class="thumb t4"></div><p>여자 배구</p></div>
+        <div class="shelf-card"><div class="thumb t5"></div><p>암벽등반</p></div>
+      </div>
+    </div>
+    <div class="shelf">
+      <h3>Shorts</h3>
+      <div class="rail">
+        <div class="vshort"><div class="thumb t1"></div></div>
+        <div class="vshort"><div class="thumb t6"></div></div>
+        <div class="vshort"><div class="thumb t3"></div></div>
+        <div class="vshort"><div class="thumb t7"></div></div>
+        <div class="vshort"><div class="thumb t8"></div></div>
+      </div>
+    </div>
+    <div class="community">
+      <div style="font-size:12px;color:#aaa;margin-bottom:8px">커뮤니티 · 3시간 전</div>
+      <p style="margin:0 0 12px">오늘 레이더에 찍힌 검색 태그. 눌러서 스튜디오 검색창을 채우세요.</p>
+      <div class="chips" id="golden-channel" style="padding:0">
+        <button class="chip gold" type="button" data-q="민생회복 소비쿠폰">민생회복 소비쿠폰</button>
+        <button class="chip gold" type="button" data-q="여자 멀리뛰기">여자 멀리뛰기</button>
+        <button class="chip gold" type="button" data-q="용적률">용적률</button>
+        <button class="chip gold" type="button" data-q="여자 배구">여자 배구</button>
+      </div>
+      <div class="yt-search" style="margin-top:14px;max-width:480px">
+        <input class="kw" placeholder="태그로 검색">
+        <button class="yt-search-go press" type="button">검색</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="skin-theater" class="hide">
+    <div class="masthead" style="background:transparent">
+      <div class="logo">
+        <svg class="yt-mark" viewBox="0 0 28 20"><rect width="28" height="20" rx="5" fill="#FF0000"/><polygon points="11,5 11,15 20,10" fill="#fff"/></svg>
+        Insight
+      </div>
+      <div class="yt-search"><input class="kw" placeholder="검색"><button class="yt-search-go press" type="button">검색</button></div>
+      <button class="btn-ghost press gold-btn" type="button">황금키워드</button>
+    </div>
+    <div class="theater-wrap">
+      <div>
+        <div class="player">
+          <div class="play"><span></span></div>
+          <span class="liveb">급등 1위</span>
+          <div class="chapters" aria-hidden="true"><u></u><u></u><u></u><u></u></div>
+        </div>
+        <h2 class="watch-title">용적률 — 지금 이 키워드가 알고리즘을 먹고 있다</h2>
+        <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center">
+          <div style="display:flex;gap:10px;align-items:center">
+            <div class="avatar-sm" style="width:40px;height:40px"></div>
+            <div><b>Insight KR</b><div style="color:#aaa;font-size:12px">구독자 12.8만</div></div>
+            <button class="btn-red press ticker-btn" type="button">구독</button>
+          </div>
+          <div class="actions">
+            <button class="pill" type="button">👍 2.1만</button>
+            <button class="pill" type="button">👎</button>
+            <button class="pill" type="button">공유</button>
+            <button class="pill" type="button">저장</button>
+            <button class="pill press ticker-btn" type="button">관련 순위 20</button>
+          </div>
+        </div>
+        <div class="desc">
+          조회 286만 · 기여도 820% · VPH 14.2K · 오늘 업로드
+          <p style="margin:8px 0 0">워치 시어터. 화면이 영상 색을 빨아들입니다. 설명란이 곧 황금키워드.</p>
+          <div class="chips" style="padding-top:10px">
+            <button class="chip gold" type="button" data-q="용적률">#용적률</button>
+            <button class="chip gold" type="button" data-q="재건축">#재건축</button>
+            <button class="chip gold" type="button" data-q="부동산">#부동산</button>
+          </div>
+        </div>
+      </div>
+      <aside class="related">
+        <div class="autoplay"><span>자동재생</span><div class="toggle"></div></div>
+        <div class="item ticker-btn"><div class="thumb t2"><span class="dur">8:21</span></div><div><b>민생회복 소비쿠폰</b><div style="color:#aaa;font-size:12px">2위 · 바로 검색</div></div></div>
+        <div class="item ticker-btn"><div class="thumb t3"><span class="dur">0:48</span></div><div><b>여자 멀리뛰기</b><div style="color:#aaa;font-size:12px">3위</div></div></div>
+        <div class="item ticker-btn"><div class="thumb t4"><span class="dur">22:10</span></div><div><b>여자 배구</b><div style="color:#aaa;font-size:12px">4위</div></div></div>
+        <div class="item ticker-btn"><div class="thumb t5"><span class="dur">15:02</span></div><div><b>암벽등반</b><div style="color:#aaa;font-size:12px">5위</div></div></div>
+        <div class="item ticker-btn"><div class="thumb t8"><span class="dur">9:11</span></div><div><b>오늘 키워드 워룸</b><div style="color:#aaa;font-size:12px">LIVE</div></div></div>
+      </aside>
+    </div>
+  </section>
+
+  <section id="skin-shorts" class="hide">
+    <div class="wall">
+      <div class="col thumb t8"></div>
+      <div class="col mid thumb t1">
+        <span class="liveb">SHORTS · 급등</span>
+        <div class="copy">
+          <h2>용적률</h2>
+          <p style="margin:0 0 10px;color:#ddd;text-shadow:0 2px 10px #000">세로로 한 방. 오리지널 사운드가 곧 검색어.</p>
+          <div class="chips">
+            <button class="chip gold" type="button" data-q="용적률">용적률</button>
+            <button class="chip gold" type="button" data-q="재건축">재건축</button>
+          </div>
+          <div class="sound">♪ 오리지널 사운드 · 용적률</div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button class="btn-red press ticker-btn" type="button">순위</button>
+            <button class="btn-ghost press gold-btn" type="button">키워드</button>
+          </div>
+        </div>
+      </div>
+      <div class="col thumb t3"></div>
+      <div class="side-act">
+        <div class="avatar-sm" style="width:48px;height:48px;border:2px solid #fff"></div>
+        <b>♡<br>2.1M</b>
+        <b>댓글<br>4.2K</b>
+        <b class="red press gold-btn">검색</b>
+        <b>공유</b>
+      </div>
+    </div>
+  </section>
+
+  <section id="skin-studio" class="hide">
+    <div class="studio-app">
+      <aside class="sidenav">
+        <div class="ch-switch">
+          <div class="avatar-sm"></div>
+          <div><b>Insight</b><div style="font-size:11px;color:#aaa">채널</div></div>
+        </div>
+        <button class="on" type="button">대시보드</button>
+        <button type="button">콘텐츠</button>
+        <button type="button">분석</button>
+        <button type="button">수익</button>
+        <button type="button">맞춤설정</button>
+        <button type="button">라이브러리</button>
+      </aside>
+      <div class="dash">
+        <h1>채널 대시보드</h1>
+        <div class="kpi">
+          <div class="card ticker-btn">
+            <h4>최신 급등 실적 · 용적률</h4>
+            <div class="n">286만</div>
+            <div style="color:#3ea6ff;font-size:13px">조회수 · 기여도 +820%</div>
+            <div class="spark"></div>
+          </div>
+          <div class="card">
+            <h4>검색으로 들어온 키워드</h4>
+            <div class="n" style="color:var(--gold)">12</div>
+            <div style="color:#aaa;font-size:13px">황금키워드 후보</div>
+            <button class="btn-ghost press gold-btn" type="button" style="margin-top:14px">패널로</button>
+          </div>
+          <div class="card ticker-btn">
+            <h4>실시간</h4>
+            <div class="n">1,284</div>
+            <div style="color:#aaa;font-size:13px">지금 시청 중 · KR</div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:8px">
+          <h4>콘텐츠</h4>
+          <table class="table">
+            <tr><td><div class="t t1"></div></td><td><b>용적률 하나로 집값이 갈렸다</b><div style="color:#aaa">공개 · 오늘</div></td><td>286만</td><td style="color:#f66">820%</td></tr>
+            <tr><td><div class="t t2"></div></td><td><b>소비쿠폰 쓰는 법 전말</b><div style="color:#aaa">공개 · 1일 전</div></td><td>96만</td><td>412%</td></tr>
+            <tr><td><div class="t t3"></div></td><td><b>멀리뛰기 국가대표 리액션</b><div style="color:#aaa">쇼츠</div></td><td>210만</td><td>198%</td></tr>
+          </table>
+        </div>
+        <div class="cinema">
+          <div class="cinema-copy">
+            <div class="kicker">TONIGHT ON INSIGHT</div>
+            <h2>용적률</h2>
+            <p style="color:#ddd;max-width:40ch">스튜디오에서 내려다보고, TV처럼 크게 튼다. 관제실 + 거실.</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn-red press ticker-btn" type="button">재생하는 대신 순위</button>
+              <button class="btn-ghost press gold-btn" type="button">황금키워드</button>
+            </div>
+            <div class="stats-float">
+              <span>기여도 820%</span><span>VPH 14.2K</span><span>KR · 종합</span>
+            </div>
+          </div>
+        </div>
+        <div id="golden-studio" style="margin-top:18px">
+          <h3 style="margin:0 0 10px">내가 검색할 키워드</h3>
+          <div class="chips">
+            <button class="chip gold" type="button" data-q="민생회복 소비쿠폰">민생회복 소비쿠폰</button>
+            <button class="chip gold" type="button" data-q="여자 멀리뛰기">여자 멀리뛰기</button>
+            <button class="chip gold" type="button" data-q="용적률">용적률</button>
+          </div>
+          <div class="rail" style="margin-top:12px">
+            <div class="tv-tile"><div class="thumb t1"></div></div>
+            <div class="tv-tile"><div class="thumb t2"></div></div>
+            <div class="tv-tile"><div class="thumb t4"></div></div>
+            <div class="tv-tile"><div class="thumb t7"></div></div>
+            <div class="tv-tile"><div class="thumb t8"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="modal" id="rankModal">
+    <div class="sheet">
+      <strong>카테고리 영상 Top 20</strong>
+      <p style="color:#aaa">티커·순위 레일·라이브 카드에서만 열립니다.</p>
+      <p>1 용적률<br>2 민생회복 소비쿠폰<br>3 여자 멀리뛰기</p>
+      <button class="btn-ghost press" type="button" id="closeRank">닫기</button>
+    </div>
+  </div>
+  <div id="toast"></div>
+  <script>
+    if (new URLSearchParams(location.search).get("shot") === "1") document.documentElement.classList.add("shot");
+    const hints = {
+      home: "1 홈 맥스 — 유튜브닷컴. 미니가이드·칩·LIVE 마퀴·쇼츠 세로레일·이어보기 진행바·라이브·4열 리치그리드.",
+      channel: "2 채널 월드 — 배너 맥시멀, 라이브 링 아바타, 구독/가입, 피처드 트레일러, 선반, 커뮤니티=황금키워드.",
+      theater: "3 시어터 — 영상 색 앰비언트, 챕터 바, 좋아요 필, 설명란 해시태그, 자동재생 관련 레일.",
+      shorts: "4 쇼츠 월 — 좌우 흐린 다음/이전, 중앙 풀블리드, 사운드=검색어, 우측 액션.",
+      studio: "5 관제+TV — YouTube Studio KPI/표 + 거실 포스터 히어로. 한 화면에 제작툴과 방송."
+    };
+    const toast = (m) => { const t = document.getElementById("toast"); t.textContent = m; t.style.display = "block"; setTimeout(() => t.style.display = "none", 1400); };
+    const show = (id) => {
+      ["home","channel","theater","shorts","studio"].forEach((k) => {
+        document.getElementById("skin-" + k).classList.toggle("hide", k !== id);
+      });
+      document.querySelectorAll(".skins button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.skin === id ? "true" : "false"));
+      document.getElementById("skinHint").textContent = hints[id];
+    };
+    show("home");
+    document.querySelectorAll(".skins button").forEach((b) => b.onclick = () => show(b.dataset.skin));
+    document.querySelectorAll(".ticker-btn").forEach((b) => b.addEventListener("click", () => document.getElementById("rankModal").classList.add("on")));
+    document.getElementById("closeRank").onclick = () => document.getElementById("rankModal").classList.remove("on");
+    document.querySelectorAll(".gold-btn").forEach((b) => b.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const vis = [...document.querySelectorAll("section:not(.hide) .chip.gold")];
+      if (vis[0]) vis[0].scrollIntoView({ behavior: "smooth", block: "center" });
+      toast("황금키워드");
+    }));
+    document.querySelectorAll(".chip[data-q]").forEach((c) => c.addEventListener("click", (e) => {
+      e.stopPropagation();
+      document.querySelectorAll("input").forEach((i) => { i.value = c.dataset.q; });
+      toast(c.dataset.q);
+    }));
+  </script>
+</body>
+</html>
