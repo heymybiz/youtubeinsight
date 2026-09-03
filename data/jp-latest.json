@@ -1,0 +1,623 @@
+{
+  "fetchedAt": "2026-09-03T03:00:00.000Z",
+  "region": "JP",
+  "quotaEstimate": 16,
+  "videos": [
+    {
+      "id": "jpvid21",
+      "title": "JP 치킨 먹방 심야",
+      "channelId": "ch21",
+      "channelTitle": "채널21",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "viewCount": 350000,
+      "subCount": 20000,
+      "viralScore": 1750,
+      "vph": 116667,
+      "deltaVph": 120,
+      "deltaRank": 2,
+      "isShort": false,
+      "tags": [
+        "치킨",
+        "급등",
+        "브이로그"
+      ],
+      "url": "https://www.youtube.com/watch?v=vid21"
+    },
+    {
+      "id": "jpvid22",
+      "title": "JP 일본 여행 브이로그",
+      "channelId": "ch22",
+      "channelTitle": "채널22",
+      "publishedAt": "2026-09-02T23:00:00.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "viewCount": 365000,
+      "subCount": 20900,
+      "viralScore": 1746.4114832535884,
+      "vph": 91250,
+      "deltaVph": null,
+      "deltaRank": null,
+      "isShort": true,
+      "tags": [
+        "일본",
+        "급등",
+        "쇼츠"
+      ],
+      "url": "https://www.youtube.com/watch?v=vid22"
+    },
+    {
+      "id": "jpvid11",
+      "title": "JP 주식 시황 요약",
+      "channelId": "ch11",
+      "channelTitle": "채널11",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "viewCount": 200000,
+      "subCount": 11000,
+      "viralScore": 1818.1818181818182,
+      "vph": 66667,
+      "deltaVph": null,
+      "deltaRank": null,
+      "isShort": false,
+      "tags": [
+        "주식",
+        "급등",
+        "브이로그"
+      ],
+      "url": "https://www.youtube.com/watch?v=vid11"
+    },
+    {
+      "id": "jpvid12",
+      "title": "JP 영어 공부 브이로그",
+      "channelId": "ch12",
+      "channelTitle": "채널12",
+      "publishedAt": "2026-09-02T23:00:00.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "viewCount": 215000,
+      "subCount": 11900,
+      "viralScore": 1806.7226890756301,
+      "vph": 53750,
+      "deltaVph": 120,
+      "deltaRank": 2,
+      "isShort": false,
+      "tags": [
+        "영어",
+        "급등",
+        "쇼츠"
+      ],
+      "url": "https://www.youtube.com/watch?v=vid12"
+    },
+    {
+      "id": "jpvid13",
+      "title": "JP 캠핑 불멍",
+      "channelId": "ch13",
+      "channelTitle": "채널13",
+      "publishedAt": "2026-09-02T22:00:00.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "viewCount": 230000,
+      "subCount": 12800,
+      "viralScore": 1796.875,
+      "vph": 46000,
+      "deltaVph": null,
+      "deltaRank": null,
+      "isShort": true,
+      "tags": [
+        "캠핑",
+        "급등",
+        "브이로그"
+      ],
+      "url": "https://www.youtube.com/watch?v=vid13"
+    },
+    {
+      "id": "jpvid14",
+      "title": "JP 헬스장 등운동",
+      "channelId": "ch14",
+      "channelTitle": "채널14",
+      "publishedAt": "2026-09-02T21:00:00.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "viewCount": 245000,
+      "subCount": 13700,
+      "viralScore": 1788.3211678832115,
+      "vph": 40833,
+      "deltaVph": null,
+      "deltaRank": null,
+      "isShort": false,
+      "tags": [
+        "헬스장",
+        "급등",
+        "쇼츠"
+      ],
+      "url": "https://www.youtube.com/watch?v=vid14"
+    },
+    {
+      "id": "jpvid15",
+      "title": "JP 편의점 신상 리뷰",
+      "channelId": "ch15",
+      "channelTitle": "채널15",
+      "publishedAt": "2026-09-02T20:00:00.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "viewCount": 260000,
+      "subCount": 14600,
+      "viralScore": 1780.821917808219,
+      "vph": 37143,
+      "deltaVph": 120,
+      "deltaRank": 2,
+      "isShort": false,
+      "tags": [
+        "편의점",
+        "급등",
+        "브이로그"
+      ],
+      "url": "https://www.youtube.com/watch?v=vid15"
+    },
+    {
+      "id": "jpvid16",
+      "title": "JP 드라마 명장면",
+      "channelId": "ch16",
+      "channelTitle": "채널16",
+      "publishedAt": "2026-09-02T19:00:00.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "viewCount": 275000,
+      "subCount": 15500,
+      "viralScore": 1774.1935483870968,
+      "vph": 34375,
+      "deltaVph": null,
+      "deltaRank": null,
+      "isShort": true,
+      "tags": [
+        "드라마",
+        "급등",
+        "쇼츠"
+      ],
+      "url": "https://www.youtube.com/watch?v=vid16"
+    },
+    {
+      "id": "jpvid17",
+      "title": "JP 날씨 오늘 서울",
+      "channelId": "ch17",
+      "channelTitle": "채널17",
+      "publishedAt": "2026-09-02T18:00:00.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "viewCount": 290000,
+      "subCount": 16400,
+      "viralScore": 1768.2926829268292,
+      "vph": 32222,
+      "deltaVph": null,
+      "deltaRank": null,
+      "isShort": false,
+      "tags": [
+        "날씨",
+        "급등",
+        "브이로그"
+      ],
+      "url": "https://www.youtube.com/watch?v=vid17"
+    },
+    {
+      "id": "jpvid18",
+      "title": "JP 자동차 시승",
+      "channelId": "ch18",
+      "channelTitle": "채널18",
+      "publishedAt": "2026-09-02T17:00:00.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "viewCount": 305000,
+      "subCount": 17300,
+      "viralScore": 1763.0057803468208,
+      "vph": 30500,
+      "deltaVph": 120,
+      "deltaRank": 2,
+      "isShort": false,
+      "tags": [
+        "자동차",
+        "급등",
+        "쇼츠"
+      ],
+      "url": "https://www.youtube.com/watch?v=vid18"
+    },
+    {
+      "id": "jpvid19",
+      "title": "JP 아기 첫 걸음",
+      "channelId": "ch19",
+      "channelTitle": "채널19",
+      "publishedAt": "2026-09-02T16:00:00.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "viewCount": 320000,
+      "subCount": 18200,
+      "viralScore": 1758.2417582417584,
+      "vph": 29091,
+      "deltaVph": null,
+      "deltaRank": null,
+      "isShort": true,
+      "tags": [
+        "아기",
+        "급등",
+        "브이로그"
+      ],
+      "url": "https://www.youtube.com/watch?v=vid19"
+    },
+    {
+      "id": "jpvid20",
+      "title": "JP ASMR 타이핑",
+      "channelId": "ch20",
+      "channelTitle": "채널20",
+      "publishedAt": "2026-09-02T15:00:00.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "viewCount": 335000,
+      "subCount": 19100,
+      "viralScore": 1753.9267015706805,
+      "vph": 27917,
+      "deltaVph": null,
+      "deltaRank": null,
+      "isShort": false,
+      "tags": [
+        "ASMR",
+        "급등",
+        "쇼츠"
+      ],
+      "url": "https://www.youtube.com/watch?v=vid20"
+    },
+    {
+      "id": "jpvid01",
+      "title": "JP 아침 먹방 리얼사운드",
+      "channelId": "ch1",
+      "channelTitle": "채널1",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "viewCount": 50000,
+      "subCount": 2000,
+      "viralScore": 2500,
+      "vph": 16667,
+      "deltaVph": null,
+      "deltaRank": null,
+      "isShort": true,
+      "tags": [
+        "아침",
+        "급등",
+        "브이로그"
+      ],
+      "url": "https://www.youtube.com/watch?v=vid01"
+    },
+    {
+      "id": "jpvid02",
+      "title": "JP 직장인 점심 도시락",
+      "channelId": "ch2",
+      "channelTitle": "채널2",
+      "publishedAt": "2026-09-02T23:00:00.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "viewCount": 65000,
+      "subCount": 2900,
+      "viralScore": 2241.379310344828,
+      "vph": 16250,
+      "deltaVph": null,
+      "deltaRank": null,
+      "isShort": false,
+      "tags": [
+        "직장인",
+        "급등",
+        "쇼츠"
+      ],
+      "url": "https://www.youtube.com/watch?v=vid02"
+    },
+    {
+      "id": "jpvid03",
+      "title": "JP 매운 라면 챌린지",
+      "channelId": "ch3",
+      "channelTitle": "채널3",
+      "publishedAt": "2026-09-02T22:00:00.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "viewCount": 80000,
+      "subCount": 3800,
+      "viralScore": 2105.263157894737,
+      "vph": 16000,
+      "deltaVph": 120,
+      "deltaRank": 2,
+      "isShort": false,
+      "tags": [
+        "매운",
+        "급등",
+        "브이로그"
+      ],
+      "url": "https://www.youtube.com/watch?v=vid03"
+    },
+    {
+      "id": "jpvid04",
+      "title": "JP 고양이 숏츠 모음",
+      "channelId": "ch4",
+      "channelTitle": "채널4",
+      "publishedAt": "2026-09-02T21:00:00.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "viewCount": 95000,
+      "subCount": 4700,
+      "viralScore": 2021.276595744681,
+      "vph": 15833,
+      "deltaVph": null,
+      "deltaRank": null,
+      "isShort": true,
+      "tags": [
+        "고양이",
+        "급등",
+        "쇼츠"
+      ],
+      "url": "https://www.youtube.com/watch?v=vid04"
+    },
+    {
+      "id": "jpvid05",
+      "title": "JP K팝 안무 따라하기",
+      "channelId": "ch5",
+      "channelTitle": "채널5",
+      "publishedAt": "2026-09-02T20:00:00.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "viewCount": 110000,
+      "subCount": 5600,
+      "viralScore": 1964.2857142857142,
+      "vph": 15714,
+      "deltaVph": null,
+      "deltaRank": null,
+      "isShort": false,
+      "tags": [
+        "K팝",
+        "급등",
+        "브이로그"
+      ],
+      "url": "https://www.youtube.com/watch?v=vid05"
+    },
+    {
+      "id": "jpvid06",
+      "title": "JP 서울 비 오는 날 브이로그",
+      "channelId": "ch6",
+      "channelTitle": "채널6",
+      "publishedAt": "2026-09-02T19:00:00.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "viewCount": 125000,
+      "subCount": 6500,
+      "viralScore": 1923.076923076923,
+      "vph": 15625,
+      "deltaVph": 120,
+      "deltaRank": 2,
+      "isShort": false,
+      "tags": [
+        "서울",
+        "급등",
+        "쇼츠"
+      ],
+      "url": "https://www.youtube.com/watch?v=vid06"
+    },
+    {
+      "id": "jpvid07",
+      "title": "JP 자취 요리 10분",
+      "channelId": "ch7",
+      "channelTitle": "채널7",
+      "publishedAt": "2026-09-02T18:00:00.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "viewCount": 140000,
+      "subCount": 7400,
+      "viralScore": 1891.8918918918919,
+      "vph": 15556,
+      "deltaVph": null,
+      "deltaRank": null,
+      "isShort": true,
+      "tags": [
+        "자취",
+        "급등",
+        "브이로그"
+      ],
+      "url": "https://www.youtube.com/watch?v=vid07"
+    },
+    {
+      "id": "jpvid08",
+      "title": "JP 축구 하이라이트 쇼츠",
+      "channelId": "ch8",
+      "channelTitle": "채널8",
+      "publishedAt": "2026-09-02T17:00:00.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "viewCount": 155000,
+      "subCount": 8300,
+      "viralScore": 1867.4698795180725,
+      "vph": 15500,
+      "deltaVph": null,
+      "deltaRank": null,
+      "isShort": false,
+      "tags": [
+        "축구",
+        "급등",
+        "쇼츠"
+      ],
+      "url": "https://www.youtube.com/watch?v=vid08"
+    },
+    {
+      "id": "jpvid09",
+      "title": "JP 게임 버그 모음",
+      "channelId": "ch9",
+      "channelTitle": "채널9",
+      "publishedAt": "2026-09-02T16:00:00.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "viewCount": 170000,
+      "subCount": 9200,
+      "viralScore": 1847.826086956522,
+      "vph": 15455,
+      "deltaVph": 120,
+      "deltaRank": 2,
+      "isShort": false,
+      "tags": [
+        "게임",
+        "급등",
+        "브이로그"
+      ],
+      "url": "https://www.youtube.com/watch?v=vid09"
+    },
+    {
+      "id": "jpvid10",
+      "title": "JP 아이돌 직캠",
+      "channelId": "ch10",
+      "channelTitle": "채널10",
+      "publishedAt": "2026-09-02T15:00:00.000Z",
+      "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+      "viewCount": 185000,
+      "subCount": 10100,
+      "viralScore": 1831.6831683168316,
+      "vph": 15417,
+      "deltaVph": null,
+      "deltaRank": null,
+      "isShort": true,
+      "tags": [
+        "아이돌",
+        "급등",
+        "쇼츠"
+      ],
+      "url": "https://www.youtube.com/watch?v=vid10"
+    }
+  ],
+  "keywords": [
+    {
+      "term": "급등",
+      "count": 22,
+      "sampleVideoIds": [
+        "jpvid21",
+        "jpvid22",
+        "jpvid11"
+      ]
+    },
+    {
+      "term": "JP",
+      "count": 22,
+      "sampleVideoIds": [
+        "jpvid21",
+        "jpvid22",
+        "jpvid11"
+      ]
+    },
+    {
+      "term": "브이로그",
+      "count": 14,
+      "sampleVideoIds": [
+        "jpvid21",
+        "jpvid22",
+        "jpvid11"
+      ]
+    },
+    {
+      "term": "쇼츠",
+      "count": 11,
+      "sampleVideoIds": [
+        "jpvid22",
+        "jpvid12",
+        "jpvid14"
+      ]
+    },
+    {
+      "term": "먹방",
+      "count": 2,
+      "sampleVideoIds": [
+        "jpvid21",
+        "jpvid01"
+      ]
+    },
+    {
+      "term": "모음",
+      "count": 2,
+      "sampleVideoIds": [
+        "jpvid04",
+        "jpvid09"
+      ]
+    },
+    {
+      "term": "서울",
+      "count": 2,
+      "sampleVideoIds": [
+        "jpvid17",
+        "jpvid06"
+      ]
+    },
+    {
+      "term": "10분",
+      "count": 1,
+      "sampleVideoIds": [
+        "jpvid07"
+      ]
+    },
+    {
+      "term": "걸음",
+      "count": 1,
+      "sampleVideoIds": [
+        "jpvid19"
+      ]
+    },
+    {
+      "term": "게임",
+      "count": 1,
+      "sampleVideoIds": [
+        "jpvid09"
+      ]
+    },
+    {
+      "term": "고양이",
+      "count": 1,
+      "sampleVideoIds": [
+        "jpvid04"
+      ]
+    },
+    {
+      "term": "공부",
+      "count": 1,
+      "sampleVideoIds": [
+        "jpvid12"
+      ]
+    },
+    {
+      "term": "날씨",
+      "count": 1,
+      "sampleVideoIds": [
+        "jpvid17"
+      ]
+    },
+    {
+      "term": "도시락",
+      "count": 1,
+      "sampleVideoIds": [
+        "jpvid02"
+      ]
+    },
+    {
+      "term": "드라마",
+      "count": 1,
+      "sampleVideoIds": [
+        "jpvid16"
+      ]
+    },
+    {
+      "term": "등운동",
+      "count": 1,
+      "sampleVideoIds": [
+        "jpvid14"
+      ]
+    },
+    {
+      "term": "따라하기",
+      "count": 1,
+      "sampleVideoIds": [
+        "jpvid05"
+      ]
+    },
+    {
+      "term": "라면",
+      "count": 1,
+      "sampleVideoIds": [
+        "jpvid03"
+      ]
+    },
+    {
+      "term": "리뷰",
+      "count": 1,
+      "sampleVideoIds": [
+        "jpvid15"
+      ]
+    },
+    {
+      "term": "리얼사운드",
+      "count": 1,
+      "sampleVideoIds": [
+        "jpvid01"
+      ]
+    }
+  ],
+  "prevFetchedAt": "2026-09-02T21:00:00.000Z"
+}

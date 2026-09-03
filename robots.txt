@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Allow: /kr/
+Allow: /keywords/
+Allow: /shorts/
+Allow: /vs-yesterday/
+Allow: /jp/
+Disallow: /studio.html
+Disallow: /youtube_insight.html

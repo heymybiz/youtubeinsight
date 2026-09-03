@@ -34,3 +34,15 @@ YouTube Insight는 유튜브 알고리즘을 역공학하여 떡상 가능성이
 1. 배포된 웹사이트 주소(GitHub Pages URL)에 스마트폰 브라우저(Safari, Chrome, Samsung Internet 등)로 접속합니다.
 2. 우측 상단 **[⚙️ API 키 설정]** 버튼을 눌러 본인의 YouTube / Gemini API 키를 1회 등록합니다.
 3. **[홈 화면에 추가]** 기능을 이용하면 앱(PWA)처럼 바로가기 아이콘을 홈 화면에 두고 언제 어디서든 간편하게 실행할 수 있습니다.
+
+---
+
+## 공개 급등 보드 (키 없음)
+
+루트 페이지(`/`)는 API 키 없이 한국 일일 급등 보드를 보여 줍니다. BYOK 스튜디오는 [`studio.html`](studio.html) 과 [`youtube_insight.html`](youtube_insight.html) 에 있습니다.
+
+- 공개 URL: `/` (오늘 KR), `/keywords/`, `/shorts/`, `/vs-yesterday/`, `/jp/`, `/kr/YYYY-MM-DD/`
+- 시크릿: GitHub Actions `YOUTUBE_API_KEY` (YouTube Data API v3). 프론트에 키를 넣지 않습니다.
+- 갱신: `.github/workflows/refresh-radar.yml` 이 6시간마다 `videos.list`(mostPopular) + `channels.list` 만 호출해 `data/kr-latest.json` 을 커밋합니다.
+- 로컬: `python3 -m http.server 8080` 후 http://127.0.0.1:8080/  (커밋된 샘플 JSON으로 렌더)
+- 광고: `assets/config.js` 의 `ADSENSE_CLIENT` 가 비어 있으면 스크립트를 로드하지 않습니다. 팝언더 없음.
