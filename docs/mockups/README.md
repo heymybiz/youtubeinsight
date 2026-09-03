@@ -4,7 +4,8 @@
 
 | 파일 | 용도 |
 |------|------|
-| [compare.html](compare.html) | **톤 5종 비교** (지금 / YT다크 / Studio라이트 / GitHub / Quiet) |
+| [yt-five.html](yt-five.html) | **유튜브 채널 벤치 파격 5종** (홈/채널/워치/쇼츠/시네마) |
+| [compare.html](compare.html) | 톤 5종 비교 (색만 변경) |
 | [index.html](index.html) | 목록 |
 | [studio-desktop.html](studio-desktop.html) | Desktop 1440, CTA 클릭 검증 |
 | [studio-phone.html](studio-phone.html) | Phone 390, 1열·칩 레인 |
