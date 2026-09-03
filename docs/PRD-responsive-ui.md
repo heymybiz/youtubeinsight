@@ -262,16 +262,21 @@ S1은 `assets/responsive.css` 1차 적용에서 이미 통과한 상태다. PRD 
 
 ---
 
-## 11. 목업으로 넘기는 방법 (이 PRD 다음)
+## 11. 목업 (이 PRD 다음 단계 — 완료)
 
-PRD Must만 담아 **와이어 2장**.
+와이어 2장 + 클릭 가능한 HTML. 목업이 PRD Must를 이기지 않는다.
 
-1. **Desktop 1440** — YouTubeLedger처럼 넓은 콘솔: 헤더 / LIVE TREND / 검색+칩 / KPI / 카드 그리드
-2. **Phone 390** — Analytics-Dashboard 모바일처럼 전부 세로. 카테고리는 Stats-Tube식 가로 칩 레인.
+| 화면 | 파일 |
+|------|------|
+| 목록 | [`docs/mockups/index.html`](mockups/index.html) |
+| Desktop 1440 | [`docs/mockups/studio-desktop.html`](mockups/studio-desktop.html) |
+| Phone 390 | [`docs/mockups/studio-phone.html`](mockups/studio-phone.html) |
 
-목업에 넣지 말 것: 새 기능, 라이트 테마, 사이드바, 로그인.
+PNG는 톤 참고용이다. 구현은 HTML 와이어의 블록 순서와 CTA 분기를 따른다.
 
-목업 툴: Excalidraw / Figma 어디든. 파일은 나중에 `docs/mockups/`에 링크만 건다.
+로컬: `./run-local.sh docs/mockups/index.html`
+
+열린 결정(헤더 더보기, Gemini 버튼 숨김)은 목업에 넣지 않았고, 지금도 열린 채로 둔다.
 
 ---
 

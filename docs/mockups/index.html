@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>목업 — YouTube Insight 스튜디오</title>
+  <style>
+    :root {
+      --bg: #0f1015;
+      --card: #1a1c23;
+      --panel: #22252e;
+      --line: #374151;
+      --text: #f3f4f6;
+      --mute: #9ca3af;
+      --blue: #3b82f6;
+      --gold: #fbbf24;
+      --note: #38bdf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      background: #07080c;
+      color: var(--text);
+    }
+    .page { max-width: 1280px; margin: 0 auto; padding: 24px 16px 64px; }
+    h1 { font-size: 1.4rem; margin: 0 0 8px; }
+    .lede { color: var(--mute); line-height: 1.55; max-width: 72ch; }
+    .gallery {
+      display: grid;
+      grid-template-columns: 1.4fr 0.7fr;
+      gap: 16px;
+      margin: 24px 0;
+    }
+    @media (max-width: 900px) { .gallery { grid-template-columns: 1fr; } }
+    figure {
+      margin: 0;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    figure img { width: 100%; display: block; }
+    figcaption { padding: 10px 12px; font-size: 13px; color: var(--mute); }
+    .links { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 28px; }
+    .links a {
+      background: var(--blue);
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .links a.ghost { background: #374151; }
+    .rules {
+      background: var(--card);
+      border: 1px dashed #4b5563;
+      border-radius: 12px;
+      padding: 16px 18px;
+      font-size: 14px;
+      line-height: 1.55;
+      color: #d1d5db;
+    }
+    .rules strong { color: var(--gold); }
+    code { font-size: 12px; background: #111; padding: 1px 5px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>와이어 목업 v0.5 — 스튜디오</h1>
+    <p class="lede">PRD Must만 담았습니다. 생성 이미지는 톤 참고용이고, <strong>클릭 가능한 HTML 와이어가 구현 기준</strong>입니다. 새 기능·사이드바·로그인·라이트 테마는 넣지 않았습니다.</p>
+    <div class="links">
+      <a href="studio-desktop.html">Desktop 1440 HTML</a>
+      <a href="studio-phone.html">Phone 390 HTML</a>
+      <a class="ghost" href="../PRD-responsive-ui.md">PRD로 돌아가기</a>
+    </div>
+    <div class="gallery">
+      <figure>
+        <img src="wireframe_studio_desktop_1440.png" alt="스튜디오 데스크톱 분위기 목업">
+        <figcaption>Desktop 1440 분위기. 구현은 studio-desktop.html 의 블록 순서·CTA 분리를 따른다.</figcaption>
+      </figure>
+      <figure>
+        <img src="wireframe_studio_phone_390.png" alt="스튜디오 폰 분위기 목업">
+        <figcaption>Phone 390 분위기. 가로 스크롤 없이 1열. 카테고리만 가로 스와이프.</figcaption>
+      </figure>
+    </div>
+    <div class="rules">
+      <p><strong>고정 CTA</strong> — 티커 클릭 = 카테고리 영상 Top 20. 금색 버튼 = 황금키워드 패널로 스크롤. 칩 = 검색창 채움.</p>
+      <p><strong>레퍼런스</strong> — YouTubeLedger: wrap + 가로 스크롤 레인. tubetrend: 터치 44px, focus-visible. Analytics-Dashboard: 폰 1열 스택.</p>
+      <p>로컬: <code>./start-studio.sh</code> 후 <code>/docs/mockups/</code> 또는 파일을 직접 연다.</p>
+    </div>
+  </div>
+</body>
+</html>
