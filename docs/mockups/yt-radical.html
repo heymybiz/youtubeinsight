@@ -739,6 +739,26 @@
       document.querySelectorAll("input").forEach((i) => { i.value = c.dataset.q; });
       toast(c.dataset.q);
     }));
+    if (params.get("autotest") === "1") {
+      const out = document.createElement("pre");
+      out.id = "autotest";
+      out.style.cssText = "position:fixed;top:8px;right:8px;z-index:200;background:#111;color:#0f0;padding:8px;font:12px monospace";
+      document.body.appendChild(out);
+      const log = [];
+      const tick = document.querySelector("#skin-home .ticker-btn");
+      tick.click();
+      log.push("modal:" + document.getElementById("rankModal").classList.contains("on"));
+      document.getElementById("closeRank").click();
+      log.push("closed:" + !document.getElementById("rankModal").classList.contains("on"));
+      const chip = document.querySelector("#skin-home .chip[data-q]");
+      chip.click();
+      log.push("filled:" + document.getElementById("kw-home").value);
+      show("channel"); log.push("channel:" + !document.getElementById("skin-channel").classList.contains("hide"));
+      show("theater"); log.push("theater:" + !document.getElementById("skin-theater").classList.contains("hide"));
+      show("shorts"); log.push("shorts:" + !document.getElementById("skin-shorts").classList.contains("hide"));
+      show("studio"); log.push("studio:" + !document.getElementById("skin-studio").classList.contains("hide"));
+      out.textContent = log.join("\n");
+    }
   </script>
 </body>
 </html>
