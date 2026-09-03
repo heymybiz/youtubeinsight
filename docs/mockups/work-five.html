@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>작업 UI 5종 — 조사 도구</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --bg2: #181818;
+      --surf: #212121;
+      --hover: #2a2a2a;
+      --line: #3f3f3f;
+      --text: #f1f1f1;
+      --mute: #aaaaaa;
+      --faint: #717171;
+      --red: #e00;
+      --link: #3ea6ff;
+      --gold: #e5c04b;
+      --gold-bg: #241e08;
+      --gold-line: #6b5420;
+      --ok: #2ba640;
+      --r: 8px;
+      --pad: 16px;
+      --focus: 0 0 0 2px #0f0f0f, 0 0 0 4px #3ea6ff;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--bg); color: var(--text); font-family: Pretendard, system-ui, sans-serif; font-size: 14px; line-height: 1.45; }
+    button, input, select { font-family: inherit; }
+    button { cursor: pointer; }
+    .hide { display: none !important; }
+    :focus-visible { outline: none; box-shadow: var(--focus); }
+    .tabular { font-variant-numeric: tabular-nums; }
+    a { color: var(--link); }
+
+    .picker {
+      position: sticky; top: 0; z-index: 40;
+      background: #0f0f0f; border-bottom: 1px solid var(--line);
+      padding: 10px 16px 12px;
+    }
+    .picker h1 { margin: 0; font-size: 13px; font-weight: 700; }
+    .picker .lede { margin: 4px 0 8px; font-size: 12px; color: var(--mute); max-width: 90ch; }
+    .skins { display: flex; flex-wrap: wrap; gap: 6px; }
+    .skins button {
+      border: 1px solid var(--line); background: var(--surf); color: var(--text);
+      border-radius: 999px; padding: 8px 12px; min-height: 36px; font-size: 12px; font-weight: 600;
+    }
+    .skins button[aria-pressed="true"] { background: #fff; color: #111; border-color: #fff; }
+    .hint { margin: 8px 0 0; font-size: 12px; color: var(--gold); }
+
+    .btn {
+      border: 0; border-radius: var(--r); min-height: 40px; padding: 0 14px;
+      font-weight: 650; font-size: 13px; background: var(--surf); color: var(--text); border: 1px solid var(--line);
+    }
+    .btn:hover { background: var(--hover); }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: #fff; color: #111; border-color: #fff; }
+    .btn-primary:hover { background: #e5e5e5; }
+    .btn-gold { background: var(--gold-bg); color: var(--gold); border-color: var(--gold-line); }
+    .btn-danger { color: #fff; background: var(--red); border-color: var(--red); }
+
+    .searchbox {
+      display: flex; flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: var(--r);
+      background: #121212; overflow: hidden;
+    }
+    .searchbox:focus-within { border-color: #717171; }
+    .searchbox input {
+      flex: 1; min-width: 0; border: 0; background: transparent; color: var(--text);
+      padding: 10px 12px; font-size: 16px; outline: none;
+    }
+    .searchbox .go { border: 0; border-left: 1px solid var(--line); border-radius: 0; background: #222; color: #fff; min-width: 76px; }
+
+    .chip {
+      border: 1px solid var(--gold-line); background: var(--gold-bg); color: #fde68a;
+      border-radius: 999px; padding: 8px 12px; min-height: 40px; font-weight: 650; font-size: 13px;
+    }
+    .chip:hover { background: #3a300c; }
+    .cats { display: flex; gap: 6px; overflow-x: auto; padding: 8px 0; scrollbar-width: none; }
+    .cats::-webkit-scrollbar { display: none; }
+    .cat {
+      flex: 0 0 auto; border: 0; background: var(--surf); color: var(--mute);
+      border-radius: 8px; padding: 8px 12px; min-height: 36px; font-weight: 600; font-size: 13px;
+    }
+    .cat.on { background: #fff; color: #111; }
+
+    .thumb {
+      width: 120px; height: 68px; border-radius: 6px; background: #111;
+      display: grid; place-items: center; color: #444; font-size: 11px; font-weight: 700;
+      flex: 0 0 auto; position: relative;
+    }
+    .thumb .dur {
+      position: absolute; right: 4px; bottom: 4px; background: #000; color: #fff;
+      font-size: 11px; padding: 1px 4px; border-radius: 2px;
+    }
+
+    .row {
+      display: grid; grid-template-columns: 28px 120px 1fr 88px 88px;
+      gap: 12px; align-items: center; padding: 8px 10px; border-radius: var(--r);
+      cursor: pointer; border: 1px solid transparent;
+    }
+    .row:hover { background: var(--hover); }
+    .row.on { background: #1c1c1c; border-color: var(--line); }
+    .row .rk { font-weight: 800; color: var(--mute); text-align: center; }
+    .row .rk.hot { color: var(--red); }
+    .row h3 { margin: 0; font-size: 14px; font-weight: 600; }
+    .row .meta { color: var(--mute); font-size: 12px; margin-top: 2px; }
+    .row .n { text-align: right; font-size: 13px; }
+    .row .n span { display: block; color: var(--faint); font-size: 11px; }
+
+    .modal {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 50;
+      align-items: stretch; justify-content: flex-end;
+    }
+    .modal.on { display: flex; }
+    .sheet {
+      width: min(420px, 100%); background: var(--bg2); border-left: 1px solid var(--line);
+      padding: 20px; overflow: auto;
+    }
+    @media (max-width: 640px) {
+      .modal { align-items: flex-end; justify-content: center; }
+      .sheet { width: 100%; border: 0; border-radius: 16px 16px 0 0; max-height: 80dvh; }
+    }
+    .sheet h2 { margin: 0 0 4px; font-size: 16px; }
+    .sheet p.help { margin: 0 0 14px; color: var(--mute); font-size: 12px; }
+    .mrow { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid #2a2a2a; align-items: center; }
+    #toast {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      background: #fff; color: #111; padding: 8px 14px; border-radius: 999px;
+      font-weight: 700; font-size: 12px; display: none; z-index: 60;
+    }
+
+    /* 1 workbench */
+    .topbar {
+      display: flex; gap: 10px; align-items: center; padding: 10px 16px;
+      border-bottom: 1px solid var(--line); background: var(--bg);
+    }
+    .brand { font-weight: 800; letter-spacing: -.03em; margin-right: 8px; white-space: nowrap; }
+    .split { display: grid; grid-template-columns: 1fr 320px; min-height: calc(100dvh - 140px); }
+    .listpane { padding: 8px 12px 40px; min-width: 0; }
+    .insp {
+      border-left: 1px solid var(--line); background: var(--bg2); padding: 16px;
+      position: sticky; top: 52px; height: calc(100dvh - 52px); overflow: auto;
+    }
+    .insp h2 { margin: 0 0 6px; font-size: 16px; }
+    .insp .help { color: var(--mute); font-size: 12px; margin: 0 0 12px; }
+    .kpis { display: flex; gap: 8px; margin: 12px 0; }
+    .kpis div { flex: 1; background: var(--surf); border-radius: 8px; padding: 8px; }
+    .kpis b { display: block; font-size: 16px; }
+    .kpis span { font-size: 11px; color: var(--mute); }
+    .thead {
+      display: grid; grid-template-columns: 28px 120px 1fr 88px 88px;
+      gap: 12px; padding: 6px 10px; color: var(--faint); font-size: 11px; font-weight: 700;
+    }
+    @media (max-width: 960px) {
+      .split { grid-template-columns: 1fr; }
+      .insp { position: relative; top: 0; height: auto; border-left: 0; border-top: 1px solid var(--line); }
+      .row, .thead { grid-template-columns: 24px 88px 1fr; }
+      .row .n { display: none; }
+    }
+
+    /* 2 search first */
+    .hero {
+      max-width: 720px; margin: 0 auto; padding: 48px 16px 24px;
+    }
+    .hero .kicker { color: var(--mute); font-size: 12px; font-weight: 700; letter-spacing: .04em; margin: 0 0 8px; }
+    .hero h2 { margin: 0 0 8px; font-size: 22px; font-weight: 750; letter-spacing: -.03em; }
+    .hero .help { color: var(--mute); margin: 0 0 20px; font-size: 13px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .compact { max-width: 720px; margin: 8px auto 48px; padding: 0 16px; }
+    .compact h3 { font-size: 13px; color: var(--mute); font-weight: 650; margin: 20px 0 8px; }
+    .citem {
+      display: flex; justify-content: space-between; gap: 12px; align-items: center;
+      padding: 10px 0; border-bottom: 1px solid #222; cursor: pointer;
+    }
+
+    /* 3 briefing */
+    .brief { max-width: 880px; margin: 0 auto; padding: 20px 16px 48px; }
+    .topic {
+      background: var(--bg2); border: 1px solid var(--line); border-radius: 12px;
+      padding: 14px 16px; margin-bottom: 10px;
+    }
+    .topic.on { border-color: #5a5a5a; }
+    .topic .hd { display: flex; gap: 12px; align-items: flex-start; }
+    .badge { width: 28px; height: 28px; border-radius: 6px; background: var(--surf); display: grid; place-items: center; font-weight: 800; flex: 0 0 auto; }
+    .badge.hot { background: var(--red); color: #fff; }
+    .topic h3 { margin: 0; font-size: 16px; }
+    .topic .stats { color: var(--mute); font-size: 12px; margin-top: 4px; }
+    .topic .acts { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; }
+    .topic .more { margin-top: 12px; padding-top: 12px; border-top: 1px solid #2a2a2a; }
+
+    /* 4 studio table */
+    .toolbar { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--line); align-items: end; }
+    .field { display: flex; flex-direction: column; gap: 4px; }
+    .field span { font-size: 11px; color: var(--faint); font-weight: 700; }
+    .field select, .field input {
+      background: #121212; color: var(--text); border: 1px solid var(--line);
+      border-radius: 6px; padding: 8px 10px; min-height: 40px;
+    }
+    table.grid {
+      width: 100%; border-collapse: collapse; font-size: 13px;
+    }
+    table.grid th {
+      text-align: left; font-size: 11px; color: var(--faint); font-weight: 700;
+      padding: 8px 12px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--bg);
+    }
+    table.grid td { padding: 10px 12px; border-bottom: 1px solid #222; vertical-align: middle; }
+    table.grid tr { cursor: pointer; }
+    table.grid tr:hover td { background: var(--hover); }
+    table.grid tr.on td { background: #1c1c1c; }
+    .drawer {
+      position: fixed; top: 0; right: 0; bottom: 0; width: min(360px, 100%);
+      background: var(--bg2); border-left: 1px solid var(--line); padding: 20px;
+      display: none; z-index: 30; overflow: auto;
+    }
+    .drawer.on { display: block; }
+
+    /* 5 thumb */
+    .device-wrap { min-height: calc(100dvh - 120px); display: grid; place-items: start center; padding: 16px; background: #000; }
+    .device {
+      width: 390px; min-height: 720px; background: var(--bg); border: 1px solid #333; border-radius: 20px;
+      overflow: hidden; position: relative; padding-bottom: 72px;
+    }
+    .dhead { padding: 14px 14px 0; }
+    .dhead h2 { margin: 0; font-size: 18px; }
+    .dlist { padding: 8px 10px 16px; }
+    .ditem { display: flex; gap: 10px; padding: 10px; border-radius: 10px; }
+    .ditem.on { background: var(--surf); }
+    .dock {
+      position: absolute; left: 0; right: 0; bottom: 0; padding: 10px;
+      background: linear-gradient(transparent, #0f0f0f 20%);
+      border-top: 1px solid var(--line);
+    }
+    .note { max-width: 390px; color: var(--mute); font-size: 12px; margin: 12px auto 0; }
+  </style>
+</head>
+<body>
+  <div class="picker">
+    <h1>조사 도구 UI 5종 · 유튜브 시청 화면 분장 없음</h1>
+    <p class="lede">이전 홈/채널/워치/쇼츠/TV는 전부 버렸다. 같은 급등 데이터로 <strong>작업 순서만</strong> 다르게 짠다. 검색은 항상 보이고, 칩은 검색어, 순위는 표/드로어. 상세: <a href="../ux-research.md">ux-research.md</a></p>
+    <div class="skins">
+      <button type="button" data-skin="bench" aria-pressed="true">1. 워크벤치</button>
+      <button type="button" data-skin="search">2. 검색 우선</button>
+      <button type="button" data-skin="brief">3. 오늘 브리핑</button>
+      <button type="button" data-skin="table">4. 콘텐츠 표</button>
+      <button type="button" data-skin="thumb">5. 엄지 스택</button>
+    </div>
+    <p class="hint" id="skinHint"></p>
+    <div style="margin-top:6px;font-size:12px"><a href="index.html">목록</a> · <a href="yt-radical.html">실패한 유튜브 분장</a></div>
+  </div>
+
+  <section id="skin-bench">
+    <div class="topbar">
+      <div class="brand">Insight</div>
+      <div class="searchbox"><input id="kw-bench" placeholder="검색할 문구" aria-label="키워드"><button class="go btn" type="button">검색</button></div>
+      <button class="btn ticker-btn" type="button">영상 순위 20</button>
+      <button class="btn btn-gold gold-btn" type="button">황금키워드</button>
+    </div>
+    <div class="cats" style="padding-left:16px" data-cats></div>
+    <div class="split">
+      <div class="listpane">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 10px">
+          <strong>지금 급등 · 종합</strong>
+          <span style="color:var(--faint);font-size:12px">행을 고르면 오른쪽에서 검색어가 나옵니다</span>
+        </div>
+        <div class="thead"><span>#</span><span></span><span>제목</span><span style="text-align:right">기여도</span><span style="text-align:right">VPH</span></div>
+        <div id="bench-rows"></div>
+      </div>
+      <aside class="insp" id="bench-insp"></aside>
+    </div>
+  </section>
+
+  <section id="skin-search" class="hide">
+    <div class="hero">
+      <p class="kicker">KR · 종합 · 오늘</p>
+      <h2>검색할 문구를 고르거나 입력하세요</h2>
+      <p class="help">웹에서 키워드 목록을 긁지 않습니다. 지금 급등 중인 영상 제목에서 검색용 문구를 뽑습니다. <kbd>/</kbd> 로 검색창.</p>
+      <div style="display:flex;gap:8px">
+        <div class="searchbox"><input class="kw" placeholder="예: 용적률"><button class="go btn" type="button">검색</button></div>
+      </div>
+      <div class="chips" id="search-chips"></div>
+    </div>
+    <div class="compact">
+      <h3>참고 · 지금 카테고리 급등 (누르면 순위)</h3>
+      <div id="search-compact" class="ticker-btn"></div>
+    </div>
+  </section>
+
+  <section id="skin-brief" class="hide">
+    <div class="brief">
+      <div style="display:flex;justify-content:space-between;align-items:end;margin-bottom:16px;gap:12px;flex-wrap:wrap">
+        <div>
+          <div class="kicker" style="color:var(--mute);font-size:12px;font-weight:700">오늘 KR 브리핑</div>
+          <h2 style="margin:4px 0 0;font-size:22px">지금 터지는 토픽</h2>
+        </div>
+        <div class="searchbox" style="max-width:360px"><input class="kw" placeholder="직접 검색"><button class="go btn" type="button">검색</button></div>
+      </div>
+      <div id="brief-list"></div>
+    </div>
+  </section>
+
+  <section id="skin-table" class="hide">
+    <div class="topbar">
+      <div class="brand">Insight</div>
+      <div class="searchbox"><input class="kw" placeholder="제목·키워드 필터"><button class="go btn" type="button">검색</button></div>
+      <button class="btn ticker-btn" type="button">영상 순위 20</button>
+    </div>
+    <div class="toolbar">
+      <div class="field"><span>국가</span><select><option>한국</option></select></div>
+      <div class="field"><span>카테고리</span><select><option>종합</option><option>예능</option><option>뉴스</option></select></div>
+      <div class="field"><span>업로드</span><select><option>전체</option><option>오늘</option><option>일주일</option></select></div>
+      <div class="field"><span>길이</span><select><option>전체</option><option>쇼츠</option><option>롱폼</option></select></div>
+      <button class="btn btn-gold gold-btn" type="button">황금키워드</button>
+    </div>
+    <div id="table-chips" class="chips" style="padding:12px 16px"></div>
+    <div style="overflow-x:auto">
+      <table class="grid" id="studio-table">
+        <thead>
+          <tr><th>#</th><th>영상</th><th>기여도</th><th>VPH</th><th>조회</th><th></th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <aside class="drawer" id="table-drawer"></aside>
+  </section>
+
+  <section id="skin-thumb" class="hide">
+    <div class="device-wrap">
+      <div>
+        <div class="device">
+          <div class="dhead">
+            <h2>Insight</h2>
+            <p style="margin:4px 0 8px;color:var(--mute);font-size:12px">카테고리 스와이프 · 칩 다음이 검색</p>
+            <div class="cats" data-cats></div>
+          </div>
+          <div class="dlist" id="thumb-list"></div>
+          <div style="padding:0 14px 12px">
+            <div style="font-size:12px;color:var(--mute);margin-bottom:8px">이 영상들에서 뽑은 검색어</div>
+            <div class="chips" id="thumb-chips"></div>
+          </div>
+          <div class="dock">
+            <div class="searchbox"><input class="kw" placeholder="칩을 누르거나 입력" id="kw-thumb"><button class="go btn" type="button">검색</button></div>
+          </div>
+        </div>
+        <p class="note">폰 IA. 검색은 하단 고정(엄지). API 키·CSV는 이 화면에서 숨기고 헤더 더보기로 접는 전제. 순위는 행 탭 → 하단 시트.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="modal" id="rankModal" role="dialog" aria-labelledby="rankTitle">
+    <div class="sheet">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <h2 id="rankTitle">지금 카테고리 영상 Top 20</h2>
+        <button class="btn" type="button" id="closeRank">닫기</button>
+      </div>
+      <p class="help">순위표입니다. 검색어가 아닙니다. 검색할 문구는 황금키워드 칩을 쓰세요.</p>
+      <div id="rankList"></div>
+    </div>
+  </div>
+  <div id="toast"></div>
+
+  <script>
+    const CATS = ["종합", "예능/엔터", "뉴스/시사", "게임", "음악", "재테크", "먹방", "쇼츠"];
+    const VIDEOS = [
+      { rank: 1, title: "용적률 하나로 집값이 갈렸다", contrib: 820, vph: 14200, views: 2860000, dur: "12:04", kws: ["용적률", "재건축", "부동산"] },
+      { rank: 2, title: "민생회복 소비쿠폰 쓰는 법 전말", contrib: 412, vph: 9800, views: 960000, dur: "8:21", kws: ["민생회복 소비쿠폰", "소비쿠폰"] },
+      { rank: 3, title: "멀리뛰기 국가대표 리액션", contrib: 198, vph: 22100, views: 2100000, dur: "0:48", kws: ["여자 멀리뛰기", "멀리뛰기"] },
+      { rank: 4, title: "여자 배구 하이라이트", contrib: 156, vph: 6100, views: 2860000, dur: "22:10", kws: ["여자 배구", "배구"] },
+      { rank: 5, title: "암벽등반 결승 다시보기", contrib: 121, vph: 4300, views: 540000, dur: "15:02", kws: ["암벽등반"] },
+      { rank: 6, title: "재건축 용적률 해설", contrib: 98, vph: 2900, views: 210000, dur: "18:40", kws: ["용적률", "재건축"] },
+      { rank: 7, title: "소비쿠폰 가맹점 리스트", contrib: 76, vph: 1800, views: 132000, dur: "6:11", kws: ["민생회복 소비쿠폰"] },
+      { rank: 8, title: "배구 국가대표 인터뷰", contrib: 54, vph: 1200, views: 88000, dur: "11:03", kws: ["여자 배구"] }
+    ];
+    const ALL_KW = [...new Set(VIDEOS.flatMap((v) => v.kws))];
+    let selected = 0;
+
+    const fmt = (n) => n >= 10000 ? (n / 10000).toFixed(n >= 100000 ? 0 : 1) + "만" : n.toLocaleString("ko");
+    const toast = (m) => { const t = document.getElementById("toast"); t.textContent = m; t.style.display = "block"; setTimeout(() => t.style.display = "none", 1400); };
+    const fillKw = (q) => {
+      document.querySelectorAll("input").forEach((i) => { i.value = q; });
+      toast(q);
+    };
+    const openRank = () => {
+      document.getElementById("rankList").innerHTML = VIDEOS.map((v) =>
+        `<div class="mrow"><b class="tabular" style="width:24px;color:${v.rank < 4 ? "var(--red)" : "var(--mute)"}">${v.rank}</b><div style="flex:1"><div>${v.title}</div><div style="color:var(--mute);font-size:12px">기여 ${v.contrib}% · VPH ${fmt(v.vph)}</div></div></div>`
+      ).join("");
+      document.getElementById("rankModal").classList.add("on");
+    };
+
+    document.querySelectorAll("[data-cats]").forEach((el) => {
+      el.innerHTML = CATS.map((c, i) => `<button type="button" class="cat${i === 0 ? " on" : ""}">${c}</button>`).join("");
+      el.addEventListener("click", (e) => {
+        if (e.target.classList.contains("cat")) {
+          el.querySelectorAll(".cat").forEach((b) => b.classList.toggle("on", b === e.target));
+        }
+      });
+    });
+
+    const chipsHtml = (ids) => ALL_KW.map((k) => `<button type="button" class="chip" data-q="${k}">${k}</button>`).join("");
+
+    function renderInsp(i) {
+      const v = VIDEOS[i];
+      document.getElementById("bench-insp").innerHTML = `
+        <div style="font-size:11px;color:var(--faint);font-weight:700;letter-spacing:.04em">선택한 영상</div>
+        <h2>${v.title}</h2>
+        <p class="help">이 제목·태그에서 검색 문구를 뽑았습니다. 칩을 누르면 검색창에 들어갑니다.</p>
+        <div class="kpis">
+          <div><span>기여도</span><b class="tabular">${v.contrib}%</b></div>
+          <div><span>VPH</span><b class="tabular">${fmt(v.vph)}</b></div>
+          <div><span>조회</span><b class="tabular">${fmt(v.views)}</b></div>
+        </div>
+        <div style="font-size:12px;color:var(--mute);margin-bottom:8px">황금키워드</div>
+        <div class="chips">${v.kws.map((k) => `<button type="button" class="chip" data-q="${k}">${k}</button>`).join("")}</div>
+        <button class="btn ticker-btn" type="button" style="width:100%;margin-top:16px">전체 순위 20</button>
+      `;
+      bindChips();
+      bindTicker();
+    }
+    function renderBench() {
+      document.getElementById("bench-rows").innerHTML = VIDEOS.map((v, i) => `
+        <div class="row${i === selected ? " on" : ""}" data-i="${i}">
+          <div class="rk tabular${v.rank < 4 ? " hot" : ""}">${v.rank}</div>
+          <div class="thumb">${v.dur}<span class="dur">${v.dur}</span></div>
+          <div><h3>${v.title}</h3><div class="meta">KR · 오늘</div></div>
+          <div class="n tabular">${v.contrib}%<span>기여도</span></div>
+          <div class="n tabular">${fmt(v.vph)}<span>VPH</span></div>
+        </div>`).join("");
+      document.querySelectorAll("#bench-rows .row").forEach((r) => r.onclick = () => { selected = +r.dataset.i; renderBench(); renderInsp(selected); });
+      renderInsp(selected);
+    }
+
+    function renderSearch() {
+      document.getElementById("search-chips").innerHTML = chipsHtml();
+      document.getElementById("search-compact").innerHTML = VIDEOS.slice(0, 5).map((v) =>
+        `<div class="citem"><span class="tabular" style="color:${v.rank < 4 ? "var(--red)" : "var(--mute)"};font-weight:800;width:20px">${v.rank}</span><span style="flex:1">${v.title}</span><span class="tabular" style="color:var(--mute);font-size:12px">${v.contrib}%</span></div>`
+      ).join("");
+      bindChips();
+    }
+
+    function renderBrief() {
+      document.getElementById("brief-list").innerHTML = VIDEOS.map((v, i) => `
+        <article class="topic${i === selected ? " on" : ""}" data-i="${i}">
+          <div class="hd">
+            <div class="badge${v.rank < 4 ? " hot" : ""}">${v.rank}</div>
+            <div style="flex:1;min-width:0">
+              <h3>${v.title}</h3>
+              <div class="stats tabular">기여 ${v.contrib}% · VPH ${fmt(v.vph)} · 조회 ${fmt(v.views)}</div>
+            </div>
+            <div class="acts">
+              <button class="btn btn-gold" type="button" data-q="${v.kws[0]}">이 문구로 검색</button>
+              <button class="btn ticker-btn" type="button">순위</button>
+            </div>
+          </div>
+          ${i === selected ? `<div class="more"><div style="font-size:12px;color:var(--mute);margin-bottom:8px">제목에서 뽑은 검색어</div><div class="chips">${v.kws.map((k) => `<button type="button" class="chip" data-q="${k}">${k}</button>`).join("")}</div></div>` : ""}
+        </article>`).join("");
+      document.querySelectorAll("#brief-list .topic").forEach((el) => {
+        el.addEventListener("click", (e) => {
+          if (e.target.closest("button")) return;
+          selected = +el.dataset.i; renderBrief(); bindChips(); bindTicker();
+        });
+      });
+      document.querySelectorAll("#brief-list [data-q]").forEach((b) => b.onclick = (e) => { e.stopPropagation(); fillKw(b.dataset.q); });
+      bindTicker();
+    }
+
+    function renderTable() {
+      document.getElementById("table-chips").innerHTML = chipsHtml();
+      document.querySelector("#studio-table tbody").innerHTML = VIDEOS.map((v, i) => `
+        <tr class="${i === selected ? "on" : ""}" data-i="${i}">
+          <td class="tabular" style="font-weight:800;color:${v.rank < 4 ? "var(--red)" : "var(--mute)"}">${v.rank}</td>
+          <td><div style="display:flex;gap:10px;align-items:center"><div class="thumb" style="width:96px;height:54px">${v.dur}</div><div><b>${v.title}</b><div style="color:var(--mute);font-size:12px">오늘 · ${v.dur}</div></div></div></td>
+          <td class="tabular">${v.contrib}%</td>
+          <td class="tabular">${fmt(v.vph)}</td>
+          <td class="tabular">${fmt(v.views)}</td>
+          <td><button class="btn" type="button" data-q="${v.kws[0]}" style="min-height:36px">검색</button></td>
+        </tr>`).join("");
+      document.querySelectorAll("#studio-table tbody tr").forEach((tr) => tr.onclick = (e) => {
+        if (e.target.closest("[data-q]")) return;
+        selected = +tr.dataset.i; renderTable(); openDrawer();
+      });
+      document.querySelectorAll("#studio-table [data-q]").forEach((b) => b.onclick = (e) => { e.stopPropagation(); fillKw(b.dataset.q); });
+      bindChips();
+    }
+    function openDrawer() {
+      const v = VIDEOS[selected];
+      const d = document.getElementById("table-drawer");
+      d.classList.add("on");
+      d.innerHTML = `
+        <button class="btn" type="button" id="closeDraw">닫기</button>
+        <h2 style="margin:16px 0 8px;font-size:16px">${v.title}</h2>
+        <p style="color:var(--mute);font-size:12px">행을 고르면 검색어가 여기 붙습니다. 페이지를 바꾸지 않습니다.</p>
+        <div class="chips" style="margin-top:12px">${v.kws.map((k) => `<button type="button" class="chip" data-q="${k}">${k}</button>`).join("")}</div>
+        <button class="btn ticker-btn" type="button" style="width:100%;margin-top:16px">전체 순위 20</button>`;
+      d.querySelector("#closeDraw").onclick = () => d.classList.remove("on");
+      bindChips(); bindTicker();
+    }
+
+    function renderThumb() {
+      document.getElementById("thumb-list").innerHTML = VIDEOS.slice(0, 6).map((v, i) => `
+        <div class="ditem${i === selected ? " on" : ""} ticker-btn" data-i="${i}">
+          <div class="badge${v.rank < 4 ? " hot" : ""}">${v.rank}</div>
+          <div><div style="font-weight:650">${v.title}</div><div style="color:var(--mute);font-size:12px" class="tabular">기여 ${v.contrib}% · VPH ${fmt(v.vph)}</div></div>
+        </div>`).join("");
+      document.getElementById("thumb-chips").innerHTML = chipsHtml();
+      bindChips(); bindTicker();
+    }
+
+    function bindChips() {
+      document.querySelectorAll(".chip[data-q]").forEach((c) => {
+        c.onclick = (e) => { e.stopPropagation(); fillKw(c.dataset.q); };
+      });
+    }
+    function bindTicker() {
+      document.querySelectorAll(".ticker-btn").forEach((b) => b.onclick = (e) => { e.stopPropagation(); openRank(); });
+    }
+
+    const hints = {
+      bench: "1 워크벤치 — 메일을 보듯 왼쪽 표, 오른쪽 검색어. 매일 쓰는 기본값 후보.",
+      search: "2 검색 우선 — 이미 넣을 말이 있는 사람. 칩은 자동완성, 순위는 아래 참고.",
+      brief: "3 오늘 브리핑 — 토픽마다 검색/순위 버튼이 갈림. 아침에 훑기.",
+      table: "4 콘텐츠 표 — Studio처럼 필터+표. 행 → 오른쪽 드로어에 키워드.",
+      thumb: "5 엄지 스택 — 390px. 칩은 검색 바로 위, 검색은 하단 고정."
+    };
+    const skins = ["bench", "search", "brief", "table", "thumb"];
+    const show = (id) => {
+      skins.forEach((k) => document.getElementById("skin-" + k).classList.toggle("hide", k !== id));
+      document.querySelectorAll(".skins button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.skin === id ? "true" : "false"));
+      document.getElementById("skinHint").textContent = hints[id];
+      if (id === "bench") renderBench();
+      if (id === "search") renderSearch();
+      if (id === "brief") renderBrief();
+      if (id === "table") renderTable();
+      if (id === "thumb") renderThumb();
+      bindTicker();
+      document.querySelectorAll(".gold-btn").forEach((b) => b.onclick = (e) => {
+        e.stopPropagation();
+        const vis = document.querySelector("section:not(.hide) .chip");
+        if (vis) vis.scrollIntoView({ behavior: "smooth", block: "center" });
+        toast("황금키워드");
+      });
+    };
+
+    document.querySelectorAll(".skins button").forEach((b) => b.onclick = () => show(b.dataset.skin));
+    document.getElementById("closeRank").onclick = () => document.getElementById("rankModal").classList.remove("on");
+    document.getElementById("rankModal").addEventListener("click", (e) => { if (e.target.id === "rankModal") e.currentTarget.classList.remove("on"); });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") document.getElementById("rankModal").classList.remove("on");
+      if (e.key === "/" && document.activeElement.tagName !== "INPUT") {
+        e.preventDefault();
+        const i = document.querySelector("section:not(.hide) input");
+        if (i) i.focus();
+      }
+    });
+
+    const params = new URLSearchParams(location.search);
+    const start = skins.includes(params.get("skin")) ? params.get("skin") : "bench";
+    show(start);
+
+    if (params.get("autotest") === "1") {
+      const out = document.createElement("pre");
+      out.id = "autotest";
+      out.style.cssText = "position:fixed;top:8px;right:8px;z-index:80;background:#111;color:#0f0;padding:8px;font:12px/1.4 monospace";
+      document.body.appendChild(out);
+      const log = [];
+      document.querySelector("#skin-bench .ticker-btn").click();
+      log.push("modal:" + document.getElementById("rankModal").classList.contains("on"));
+      document.getElementById("closeRank").click();
+      document.querySelector("#skin-bench .chip").click();
+      log.push("filled:" + document.getElementById("kw-bench").value);
+      skins.forEach((k) => { show(k); log.push(k + ":" + !document.getElementById("skin-" + k).classList.contains("hide")); });
+      out.textContent = log.join("\n");
+    }
+  </script>
+</body>
+</html>

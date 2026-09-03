@@ -67,42 +67,24 @@
 </head>
 <body>
   <div class="page">
-    <h1>와이어 목업 — 스튜디오</h1>
-    <p class="lede">유튜브 다크를 고정한 채, <a href="yt-radical.html" style="color:#93c5fd">채널 벤치 파격 5종</a>에서 레이아웃을 고르세요. 홈 맥스 / 채널 월드 / 시어터 / 쇼츠 월 / 관제+TV. 이전 밀도 버전은 <a href="yt-five.html" style="color:#93c5fd">yt-five</a>.</p>
+    <h1>스튜디오 목업</h1>
+    <p class="lede">유튜브 시청 화면을 씌운 5종은 폐기 후보입니다. 지금은 <a href="work-five.html" style="color:#93c5fd">조사 도구 5종</a>에서 작업 순서를 고르세요. 왜 이전 것이 실패했는지: <a href="../ux-research.md" style="color:#93c5fd">UX 재조사</a>.</p>
     <div class="links">
-      <a href="yt-radical.html">채널 벤치 파격 5종 (추천)</a>
-      <a class="ghost" href="yt-five.html">이전 레이아웃 5종</a>
-      <a class="ghost" href="compare.html">이전 톤 비교</a>
+      <a href="work-five.html">조사 도구 5종 (추천)</a>
+      <a class="ghost" href="../ux-research.md">UX 재조사</a>
       <a class="ghost" href="studio-desktop.html">Desktop 1440</a>
       <a class="ghost" href="studio-phone.html">Phone 390</a>
+      <a class="ghost" href="yt-radical.html">실패한 유튜브 분장</a>
+      <a class="ghost" href="compare.html">톤 비교</a>
       <a class="ghost" href="../PRD-responsive-ui.md">PRD</a>
     </div>
-    <div class="gallery">
-      <figure>
-        <img src="radical_home.png" alt="1 홈 맥스">
-        <figcaption>1 홈 맥스 — 미니가이드, LIVE 마퀴, 쇼츠 세로레일, 이어보기, 라이브.</figcaption>
-      </figure>
-      <figure>
-        <img src="radical_channel.png" alt="2 채널 월드">
-        <figcaption>2 채널 월드 — 배너, 아바타, 구독/가입, 피처드, 급상승 선반.</figcaption>
-      </figure>
-      <figure>
-        <img src="radical_theater.png" alt="3 시어터">
-        <figcaption>3 시어터 — 앰비언트 글로우 워치, 챕터, 관련 급등 레일.</figcaption>
-      </figure>
-      <figure>
-        <img src="radical_shorts.png" alt="4 쇼츠 월">
-        <figcaption>4 쇼츠 월 — 좌우 흐린 다음/이전, 중앙 풀블리드, 사운드=검색어.</figcaption>
-      </figure>
-      <figure>
-        <img src="radical_studio.png" alt="5 관제+TV">
-        <figcaption>5 관제+TV — Studio KPI/표 + 거실 포스터 히어로.</figcaption>
-      </figure>
+    <div class="gallery" id="work-shots">
+      <p class="lede" style="grid-column:1/-1;margin:0">스크린샷은 이 커밋 다음에 붙입니다. 지금은 <code>work-five.html</code>을 직접 여세요.</p>
     </div>
     <div class="rules">
-      <p><strong>고정 CTA</strong> — 티커 클릭 = 카테고리 영상 Top 20. 금색 버튼 = 황금키워드 패널로 스크롤. 칩 = 검색창 채움.</p>
-      <p><strong>레퍼런스</strong> — YouTubeLedger: wrap + 가로 스크롤 레인. tubetrend: 터치 44px, focus-visible. Analytics-Dashboard: 폰 1열 스택.</p>
-      <p>로컬: <code>./start-studio.sh</code> 후 <code>/docs/mockups/</code> 또는 파일을 직접 연다.</p>
+      <p><strong>고정 CTA</strong> — 순위 버튼/표 = 카테고리 영상 Top 20. 황금키워드 버튼 = 칩으로 포커스. 칩 = 검색창 채움.</p>
+      <p><strong>원칙</strong> — 검색창은 항상 보임. 가짜 구독/좋아요/쇼츠 월 없음. 폰은 하단 검색.</p>
+      <p>로컬: <code>./run-local.sh docs/mockups/work-five.html</code></p>
     </div>
   </div>
 </body>

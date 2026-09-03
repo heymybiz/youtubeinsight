@@ -271,7 +271,8 @@ S1은 `assets/responsive.css` 1차 적용에서 이미 통과한 상태다. PRD 
 | 화면 | 파일 |
 |------|------|
 | 목록 | [`docs/mockups/index.html`](mockups/index.html) |
-| **채널 벤치 5종** | [`docs/mockups/yt-five.html`](mockups/yt-five.html) |
+| **조사 도구 5종** | [`docs/mockups/work-five.html`](mockups/work-five.html) |
+| UX 재조사 | [`docs/ux-research.md`](ux-research.md) |
 | Desktop 1440 | [`docs/mockups/studio-desktop.html`](mockups/studio-desktop.html) |
 | Phone 390 | [`docs/mockups/studio-phone.html`](mockups/studio-phone.html) |
 
