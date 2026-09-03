@@ -420,7 +420,7 @@
       document.getElementById("bench-rows").innerHTML = VIDEOS.map((v, i) => `
         <div class="row${i === selected ? " on" : ""}" data-i="${i}">
           <div class="rk tabular${v.rank < 4 ? " hot" : ""}">${v.rank}</div>
-          <div class="thumb">${v.dur}<span class="dur">${v.dur}</span></div>
+          <div class="thumb"><span class="dur">${v.dur}</span></div>
           <div><h3>${v.title}</h3><div class="meta">KR · 오늘</div></div>
           <div class="n tabular">${v.contrib}%<span>기여도</span></div>
           <div class="n tabular">${fmt(v.vph)}<span>VPH</span></div>
@@ -468,7 +468,7 @@
       document.querySelector("#studio-table tbody").innerHTML = VIDEOS.map((v, i) => `
         <tr class="${i === selected ? "on" : ""}" data-i="${i}">
           <td class="tabular" style="font-weight:800;color:${v.rank < 4 ? "var(--red)" : "var(--mute)"}">${v.rank}</td>
-          <td><div style="display:flex;gap:10px;align-items:center"><div class="thumb" style="width:96px;height:54px">${v.dur}</div><div><b>${v.title}</b><div style="color:var(--mute);font-size:12px">오늘 · ${v.dur}</div></div></div></td>
+          <td><div style="display:flex;gap:10px;align-items:center"><div class="thumb" style="width:96px;height:54px"><span class="dur">${v.dur}</span></div><div><b>${v.title}</b><div style="color:var(--mute);font-size:12px">오늘</div></div></div></td>
           <td class="tabular">${v.contrib}%</td>
           <td class="tabular">${fmt(v.vph)}</td>
           <td class="tabular">${fmt(v.views)}</td>
