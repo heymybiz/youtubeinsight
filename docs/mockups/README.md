@@ -4,6 +4,7 @@
 
 | 파일 | 용도 |
 |------|------|
+| [compare.html](compare.html) | **톤 5종 비교** (지금 / YT다크 / Studio라이트 / GitHub / Quiet) |
 | [index.html](index.html) | 목록 |
 | [studio-desktop.html](studio-desktop.html) | Desktop 1440, CTA 클릭 검증 |
 | [studio-phone.html](studio-phone.html) | Phone 390, 1열·칩 레인 |

@@ -271,12 +271,17 @@ S1은 `assets/responsive.css` 1차 적용에서 이미 통과한 상태다. PRD 
 | 화면 | 파일 |
 |------|------|
 | 목록 | [`docs/mockups/index.html`](mockups/index.html) |
+| **톤 5종 비교** | [`docs/mockups/compare.html`](mockups/compare.html) |
 | Desktop 1440 | [`docs/mockups/studio-desktop.html`](mockups/studio-desktop.html) |
 | Phone 390 | [`docs/mockups/studio-phone.html`](mockups/studio-phone.html) |
 
 PNG는 톤 참고용이다. 구현은 HTML 와이어의 블록 순서와 CTA 분기를 따른다.
 
-로컬: `./run-local.sh docs/mockups/index.html`
+로컬에서 톤만 고르려면:
+
+```bash
+./run-local.sh docs/mockups/compare.html
+```
 
 열린 결정(헤더 더보기, Gemini 버튼 숨김)은 목업에 넣지 않았고, 지금도 열린 채로 둔다.
 
