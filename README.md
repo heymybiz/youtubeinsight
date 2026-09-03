@@ -45,5 +45,6 @@ YouTube Insight는 유튜브 알고리즘을 역공학하여 떡상 가능성이
 - 시크릿: GitHub Actions `YOUTUBE_API_KEY` (YouTube Data API v3). 프론트에 키를 넣지 않습니다.
 - 갱신: `.github/workflows/refresh-radar.yml` 이 6시간마다 `videos.list`(mostPopular) + `channels.list` 만 호출해 `data/kr-latest.json` 을 커밋합니다.
 - 로컬: `index.html`을 브라우저로 열어도 됩니다. 또는 `python3 -m http.server 8080` 후 http://127.0.0.1:8080/
+- 원클릭 실행: `./run-local.sh` 를 실행하면 로컬 폴더에서 `python3 -m http.server 8080` 을 띄우고 기본으로 `studio.html` 을 브라우저에서 엽니다. 다른 페이지를 열려면 `./run-local.sh index.html` 처럼 인자를 넘기세요.
 - GitHub Pages: https://heymybiz.github.io/youtubeinsight/  (이 브랜치가 `main`에 반영된 뒤)
 - 광고: `assets/config.js` 의 `ADSENSE_CLIENT` 가 비어 있으면 스크립트를 로드하지 않습니다. 팝언더 없음.
