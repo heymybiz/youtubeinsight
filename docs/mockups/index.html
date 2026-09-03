@@ -28,11 +28,10 @@
     .lede { color: var(--mute); line-height: 1.55; max-width: 72ch; }
     .gallery {
       display: grid;
-      grid-template-columns: 1.4fr 0.7fr;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 16px;
       margin: 24px 0;
     }
-    @media (max-width: 900px) { .gallery { grid-template-columns: 1fr; } }
     figure {
       margin: 0;
       background: var(--card);
@@ -80,12 +79,24 @@
     </div>
     <div class="gallery">
       <figure>
-        <img src="wireframe_studio_desktop_1440.png" alt="스튜디오 데스크톱 분위기 목업">
-        <figcaption>Desktop 1440 분위기. 구현은 studio-desktop.html 의 블록 순서·CTA 분리를 따른다.</figcaption>
+        <img src="radical_home.png" alt="1 홈 맥스">
+        <figcaption>1 홈 맥스 — 미니가이드, LIVE 마퀴, 쇼츠 세로레일, 이어보기, 라이브.</figcaption>
       </figure>
       <figure>
-        <img src="wireframe_studio_phone_390.png" alt="스튜디오 폰 분위기 목업">
-        <figcaption>Phone 390 분위기. 가로 스크롤 없이 1열. 카테고리만 가로 스와이프.</figcaption>
+        <img src="radical_channel.png" alt="2 채널 월드">
+        <figcaption>2 채널 월드 — 배너, 아바타, 구독/가입, 피처드, 급상승 선반.</figcaption>
+      </figure>
+      <figure>
+        <img src="radical_theater.png" alt="3 시어터">
+        <figcaption>3 시어터 — 앰비언트 글로우 워치, 챕터, 관련 급등 레일.</figcaption>
+      </figure>
+      <figure>
+        <img src="radical_shorts.png" alt="4 쇼츠 월">
+        <figcaption>4 쇼츠 월 — 좌우 흐린 다음/이전, 중앙 풀블리드, 사운드=검색어.</figcaption>
+      </figure>
+      <figure>
+        <img src="radical_studio.png" alt="5 관제+TV">
+        <figcaption>5 관제+TV — Studio KPI/표 + 거실 포스터 히어로.</figcaption>
       </figure>
     </div>
     <div class="rules">

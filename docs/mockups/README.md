@@ -5,6 +5,7 @@
 | 파일 | 용도 |
 |------|------|
 | [yt-radical.html](yt-radical.html) | **유튜브 채널 벤치 파격 5종** (홈 맥스 / 채널 월드 / 시어터 / 쇼츠 월 / 관제+TV) |
+| `radical_{home,channel,theater,shorts,studio}.png` | 파격 5종 스크린샷 |
 | [yt-five.html](yt-five.html) | 이전 레이아웃 5종 (밀도 낮은 초안) |
 | [compare.html](compare.html) | 톤 5종 비교 (색만 변경) |
 | [index.html](index.html) | 목록 |

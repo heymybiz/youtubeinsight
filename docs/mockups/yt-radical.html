@@ -705,7 +705,8 @@
   </div>
   <div id="toast"></div>
   <script>
-    if (new URLSearchParams(location.search).get("shot") === "1") document.documentElement.classList.add("shot");
+    const params = new URLSearchParams(location.search);
+    if (params.get("shot") === "1") document.documentElement.classList.add("shot");
     const hints = {
       home: "1 홈 맥스 — 유튜브닷컴. 미니가이드·칩·LIVE 마퀴·쇼츠 세로레일·이어보기 진행바·라이브·4열 리치그리드.",
       channel: "2 채널 월드 — 배너 맥시멀, 라이브 링 아바타, 구독/가입, 피처드 트레일러, 선반, 커뮤니티=황금키워드.",
@@ -721,7 +722,9 @@
       document.querySelectorAll(".skins button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.skin === id ? "true" : "false"));
       document.getElementById("skinHint").textContent = hints[id];
     };
-    show("home");
+    const allowed = ["home","channel","theater","shorts","studio"];
+    const start = allowed.includes(params.get("skin")) ? params.get("skin") : "home";
+    show(start);
     document.querySelectorAll(".skins button").forEach((b) => b.onclick = () => show(b.dataset.skin));
     document.querySelectorAll(".ticker-btn").forEach((b) => b.addEventListener("click", () => document.getElementById("rankModal").classList.add("on")));
     document.getElementById("closeRank").onclick = () => document.getElementById("rankModal").classList.remove("on");
