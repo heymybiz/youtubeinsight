@@ -20,6 +20,10 @@ is_running() {
   kill -0 "$pid" 2>/dev/null
 }
 
+port_ready() {
+  curl -fsS "http://${HOST}:${PORT}/" >/dev/null 2>&1
+}
+
 start_server() {
   if [[ -f "$PID_FILE" ]]; then
     local existing_pid
@@ -28,6 +32,11 @@ start_server() {
       echo "로컬 서버 재사용: PID ${existing_pid}"
       return
     fi
+  fi
+
+  if port_ready; then
+    echo "로컬 서버 재사용: http://${HOST}:${PORT}/ (이미 실행 중)"
+    return
   fi
 
   echo "로컬 서버 시작: http://${HOST}:${PORT}/"
@@ -40,7 +49,7 @@ start_server() {
   local pid
   pid="$(cat "$PID_FILE")"
   for _ in {1..30}; do
-    if curl -fsS "http://${HOST}:${PORT}/" >/dev/null 2>&1; then
+    if port_ready; then
       echo "서버 준비 완료: PID ${pid}"
       return
     fi
