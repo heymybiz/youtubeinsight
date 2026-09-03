@@ -1,4 +1,11 @@
 (function () {
+  var pathName = location.pathname;
+  var last = pathName.split("/").pop();
+  if (last && last.indexOf(".") === -1 && pathName.slice(-1) !== "/") {
+    location.replace(pathName + "/" + location.search + location.hash);
+    return;
+  }
+
   const root = document.documentElement;
   const cfg = window.RADAR_CONFIG || {};
   if (cfg.ADSENSE_CLIENT) {
@@ -207,14 +214,24 @@
     });
   }
 
-  async function boot() {
+  async function loadPayload() {
     const src = document.body.getAttribute("data-src");
+    const embedName = document.body.getAttribute("data-embed");
+    try {
+      const res = await fetch(src, { cache: "no-store" });
+      if (res.ok) return await res.json();
+    } catch (err) {
+      /* file:// or Pages 404 — fall through to embed */
+    }
+    if (embedName && window[embedName]) return window[embedName];
+    throw new Error("no data");
+  }
+
+  async function boot() {
     const status = $("status");
     bind();
     try {
-      const res = await fetch(src);
-      if (!res.ok) throw new Error("fetch " + res.status);
-      state.payload = await res.json();
+      state.payload = await loadPayload();
       if (status) {
         status.textContent =
           "갱신 " +

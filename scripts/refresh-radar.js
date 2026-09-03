@@ -181,6 +181,14 @@ function writeJson(file, obj) {
   fs.writeFileSync(file, JSON.stringify(obj, null, 2) + "\n");
 }
 
+function writeEmbed(file, globalName, obj) {
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(
+    file,
+    "window." + globalName + " = " + JSON.stringify(obj) + ";\n"
+  );
+}
+
 async function buildRegionPayload(region, key, nowMs, latestPath) {
   const prev = readJson(latestPath);
   const videos = applyDeltas(await fetchRegion(region, key, nowMs), prev);
@@ -210,6 +218,7 @@ async function main() {
   kr.quotaEstimate = 16;
   writeJson(krPath, kr);
   writeJson(path.join(DATA, "kr", `${day}.json`), kr);
+  writeEmbed(path.join(DATA, "embed-kr.js"), "RADAR_EMBED_KR", kr);
 
   try {
     const jpPath = path.join(DATA, "jp-latest.json");
@@ -217,6 +226,7 @@ async function main() {
     jp.quotaEstimate = 16;
     writeJson(jpPath, jp);
     writeJson(path.join(DATA, "jp", `${day}.json`), jp);
+    writeEmbed(path.join(DATA, "embed-jp.js"), "RADAR_EMBED_JP", jp);
   } catch (err) {
     console.error("JP fetch failed; KR cache was written:", err.message);
   }
