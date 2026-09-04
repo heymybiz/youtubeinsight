@@ -2415,7 +2415,7 @@ ${topic}`;
         
         // 1차 시도: rss2json 오픈 API
         try {
-            const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`);
+            const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`, { signal: AbortSignal.timeout(2500) });
             if (res.ok) {
                 const data = await res.json();
                 if (data.items && data.items.length > 0) {
@@ -2430,7 +2430,7 @@ ${topic}`;
 
         // 2차 시도: allorigins CORS 프록시 (XML 파싱)
         try {
-            const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(rssUrl)}`);
+            const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(rssUrl)}`, { signal: AbortSignal.timeout(2500) });
             if (res.ok) {
                 const xmlText = await res.text();
                 const parser = new DOMParser();
@@ -2633,12 +2633,19 @@ ${topic}`;
             </div>
         `;
 
-        // 데이터 로드 (캐시 또는 API)
-        const rankingList = await getCategoryRankingList(categoryKey, countryCode);
-        renderRollingTickerItems(rankingList);
-        startRollingTicker();
+        const feedPromise = loadTrendingFeed(categoryKey, countryCode);
+        try {
+            const rankingList = await Promise.race([
+                getCategoryRankingList(categoryKey, countryCode),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('ranking-timeout')), 4500))
+            ]);
+            renderRollingTickerItems(rankingList);
+            startRollingTicker();
+        } catch (err) {
+            console.warn('ticker ranking', err);
+        }
+        await feedPromise;
         refreshGoldenKeywords();
-        await loadTrendingFeed(categoryKey, countryCode);
     }
 
     // 🎯 제목 정제 헬퍼 (불필요한 태그, 특수문자, 대괄호 제거 및 핵심 검색어 추출)
