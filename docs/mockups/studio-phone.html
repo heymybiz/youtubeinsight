@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>목업 Phone 390 — 스튜디오</title>
+  <style>
+    :root {
+      --bg: #0f1015; --card: #1a1c23; --panel: #22252e; --line: #374151;
+      --text: #f3f4f6; --mute: #9ca3af; --blue: #3b82f6; --gold: #fbbf24;
+      --touch: 44px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; overflow-x: clip; }
+    body { background: #000; color: var(--text); font-family: Pretendard, system-ui, sans-serif; }
+    .phone {
+      width: 390px; min-height: 100dvh; margin: 0 auto; background: var(--bg);
+      padding: 12px; padding-bottom: 28px;
+    }
+    .ann { font-size: 10px; color: #7dd3fc; font-family: ui-monospace, monospace; margin: 0 0 8px; }
+    header, .block { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+    h1 { margin: 0; font-size: 1.15rem; }
+    .sub { color: var(--mute); font-size: 11px; line-height: 1.4; }
+    .stack { display: flex; flex-direction: column; gap: 8px; }
+    .btn { border: 0; border-radius: 8px; min-height: var(--touch); font-weight: 700; cursor: pointer; color: #fff; background: #374151; width: 100%; }
+    .btn.green { background: #10b981; }
+    .btn.gold { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #111; }
+    .btn.blue { background: var(--blue); }
+    .token { background: rgba(139,92,246,.12); border: 1px solid rgba(139,92,246,.35); border-radius: 8px; padding: 10px; font-size: 12px; }
+    .pills {
+      display: flex; flex-wrap: nowrap; gap: 6px; overflow-x: auto;
+      -webkit-overflow-scrolling: touch; max-width: 100%;
+    }
+    .pill { flex: 0 0 auto; background: #252836; border: 1px solid var(--line); color: var(--mute); border-radius: 999px; padding: 8px 12px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+    .pill.on { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: #fff; border-color: transparent; }
+    .ticker { background: #101218; border: 1px solid #2e3444; border-radius: 10px; padding: 10px 12px; display: flex; gap: 8px; align-items: center; cursor: pointer; }
+    .rank { width: 22px; height: 22px; border-radius: 4px; background: #f59e0b; color: #000; font-weight: 900; display: grid; place-items: center; font-size: 12px; flex: 0 0 auto; }
+    label { font-size: 11px; color: var(--blue); font-weight: 700; display: block; margin: 8px 0 6px; }
+    select, input { width: 100%; min-height: var(--touch); background: #111; border: 1px solid var(--line); border-radius: 8px; color: #fff; padding: 10px; }
+    .gold-panel { border: 1px solid #4c3d12; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .chip { background: #1f2937; color: #fde68a; border: 1px solid #92400e; border-radius: 999px; padding: 10px 12px; min-height: var(--touch); font-weight: 700; cursor: pointer; }
+    .kpi { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .kpi div { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; text-align: center; }
+    .kpi b { display: block; font-size: 18px; }
+    .kpi span { color: var(--mute); font-size: 11px; }
+    .thumb { aspect-ratio: 16/9; background: #111; border-radius: 8px; }
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); align-items: flex-end; }
+    .modal.on { display: flex; }
+    .sheet { background: var(--card); width: 390px; margin: 0 auto; border-radius: 12px 12px 0 0; padding: 16px; }
+    #toast { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: #fff; color: #111; padding: 8px 14px; border-radius: 999px; font-size: 12px; font-weight: 700; display: none; white-space: nowrap; }
+    a { color: #93c5fd; }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <p class="ann">PHONE 390 · overflow-x clip · 탭만 가로 스와이프 · <a href="index.html">목록</a></p>
+    <header>
+      <h1>YouTube Insight V6.1</h1>
+      <div class="sub">Analytics-Dashboard: 액션은 풀너비 스택</div>
+      <div class="stack" style="margin-top:10px;">
+        <button class="btn" type="button">태그 랭킹</button>
+        <button class="btn" type="button">API 키</button>
+        <button class="btn green" type="button">CSV</button>
+        <div class="token">Token · $0.0000</div>
+      </div>
+    </header>
+
+    <div class="block">
+      <p class="ann">Stats-Tube / Ledger · 칩 레인 overflow-x:auto</p>
+      <strong>LIVE TREND · KR</strong>
+      <div class="pills" style="margin:10px 0;">
+        <span class="pill on">종합 핫이슈</span>
+        <span class="pill">예능/엔터</span>
+        <span class="pill">뉴스/시사</span>
+        <span class="pill">게임</span>
+        <span class="pill">음악</span>
+        <span class="pill">쇼츠</span>
+      </div>
+      <div class="ticker" id="ticker">
+        <span class="rank">1</span>
+        <span>용적률 · 영상 순위</span>
+      </div>
+      <button class="btn gold" type="button" id="goldBtn" style="margin-top:8px;">황금키워드로 검색</button>
+    </div>
+
+    <div class="block" id="searchBlock">
+      <label>업로드 날짜</label>
+      <select><option>전체</option></select>
+      <label>검색</label>
+      <select><option>키워드 검색</option></select>
+      <input id="keyword" placeholder="칩을 누르거나 직접 입력" style="margin-top:8px;">
+      <button class="btn blue" type="button" style="margin-top:8px;">Deep Search</button>
+    </div>
+
+    <div class="block gold-panel" id="golden">
+      <strong>황금키워드</strong>
+      <div class="sub">급등 제목에서 뽑은 검색 문구. 칩을 누르면 칸에 들어갑니다.</div>
+      <div class="chips">
+        <button class="chip" type="button" data-q="민생회복 소비쿠폰">민생회복 소비쿠폰</button>
+        <button class="chip" type="button" data-q="여자 멀리뛰기">여자 멀리뛰기</button>
+        <button class="chip" type="button" data-q="용적률">용적률</button>
+      </div>
+    </div>
+
+    <div class="kpi">
+      <div><span>영상</span><b>48</b></div>
+      <div><span>조회</span><b>286K</b></div>
+      <div><span>떡상</span><b>82</b></div>
+      <div><span>갭</span><b>—</b></div>
+    </div>
+
+    <div class="block">
+      <p class="ann">결과 1열 · 썸네일 16:9 가득</p>
+      <div class="thumb"></div>
+      <p style="font-weight:800; margin:10px 0 0;">결과 카드</p>
+    </div>
+  </div>
+
+  <div class="modal" id="rankModal">
+    <div class="sheet">
+      <strong>카테고리 영상 Top 20</strong>
+      <p class="sub">하단 시트 모달 (폰). 티커만 연다.</p>
+      <button class="btn" type="button" id="closeRank">닫기</button>
+    </div>
+  </div>
+  <div id="toast"></div>
+  <script>
+    const toast = (t) => { const el = document.getElementById('toast'); el.textContent = t; el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 1600); };
+    document.getElementById('ticker').onclick = () => document.getElementById('rankModal').classList.add('on');
+    document.getElementById('closeRank').onclick = () => document.getElementById('rankModal').classList.remove('on');
+    document.getElementById('goldBtn').onclick = () => {
+      document.getElementById('golden').scrollIntoView({ behavior: 'smooth' });
+      toast('황금키워드로 스크롤');
+    };
+    document.querySelectorAll('.chip').forEach((c) => c.onclick = () => {
+      document.getElementById('keyword').value = c.dataset.q;
+      toast(c.dataset.q);
+    });
+  </script>
+</body>
+</html>

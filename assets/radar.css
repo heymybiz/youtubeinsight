@@ -1,0 +1,143 @@
+:root {
+  --bg-color: #f4f6f8;
+  --card-bg: #fff;
+  --panel-bg: #f8fafc;
+  --text-main: #111827;
+  --text-sub: #6b7280;
+  --accent-color: #2563eb;
+  --accent-hover: #1d4ed8;
+  --border-color: #e4e8ee;
+  --great: #166534;
+  --great-bg: #dcfce7;
+  --good: #854d0e;
+  --good-bg: #fef9c3;
+  --norm: #4b5563;
+  --norm-bg: #f3f4f6;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Inter, Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  background: var(--bg-color);
+  color: var(--text-main);
+  overflow-x: hidden;
+}
+a { color: var(--accent-color); }
+.wrap { max-width: 960px; margin: 0 auto; padding: 16px; }
+header h1 { font-size: 1.35rem; margin: 0 0 6px; letter-spacing: -0.03em; }
+.sub { color: var(--text-sub); font-size: 0.9rem; margin: 0 0 16px; }
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+nav a {
+  color: var(--text-main);
+  text-decoration: none;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: var(--card-bg);
+}
+nav a[aria-current="page"] {
+  border-color: #111827;
+  background: #111827;
+  color: #fff;
+}
+.facts {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  margin-bottom: 14px;
+}
+#ad-slot-board,
+#ad-slot-action {
+  min-height: 72px;
+  border: 1px dashed var(--border-color);
+  border-radius: 8px;
+  margin: 12px 0;
+  background: var(--panel-bg);
+}
+.sort-bar { display: flex; gap: 8px; margin: 12px 0; }
+.sort-bar button {
+  background: #f3f4f6;
+  color: var(--text-sub);
+  border: 0;
+  border-radius: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: 700;
+}
+.sort-bar button[aria-pressed="true"] {
+  background: #fff;
+  color: var(--text-main);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border-color);
+}
+.keywords { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.keywords button {
+  background: #fffbeb;
+  color: #92400e;
+  border: 1px solid #f59e0b;
+  border-radius: 999px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.keywords button[aria-pressed="true"] {
+  background: #f59e0b;
+  color: #111827;
+}
+.list { display: flex; flex-direction: column; gap: 10px; }
+.card {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 10px;
+}
+.card img { width: 120px; height: 68px; object-fit: cover; border-radius: 8px; background: #e5e7eb; }
+.card h2 { font-size: 0.98rem; margin: 0 0 4px; line-height: 1.35; }
+.meta { color: var(--text-sub); font-size: 0.8rem; margin-bottom: 6px; }
+.stats { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.8rem; align-items: center; }
+.stats span { background: var(--panel-bg); padding: 2px 6px; border-radius: 6px; }
+.badge { color: #b45309; font-weight: 800; }
+.pill {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+.pill.great { background: var(--great-bg); color: var(--great); }
+.pill.good { background: var(--good-bg); color: var(--good); }
+.pill.normal { background: var(--norm-bg); color: var(--norm); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.actions a,
+.actions button {
+  background: var(--accent-color);
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  text-decoration: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-weight: 700;
+}
+.actions button { background: #fff; color: var(--text-main); border: 1px solid var(--border-color); }
+.error { color: #b91c1c; }
+footer { margin-top: 28px; color: var(--text-sub); font-size: 0.8rem; }
+@media (max-width: 640px) {
+  .card { grid-template-columns: 1fr; }
+  .card img { width: 100%; height: auto; aspect-ratio: 16/9; }
+}

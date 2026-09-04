@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>일본 급등 보드 — 떡상 검색기</title>
+  <link rel="stylesheet" href="../assets/radar.css">
+  <link rel="stylesheet" href="../assets/responsive.css">
+</head>
+<body data-src="../data/jp-latest.json" data-embed="RADAR_EMBED_JP" data-filter="all">
+  <div class="wrap">
+    <header>
+      <h1>일본 보드</h1>
+      <p class="sub">한국 보드와 같은 캐시 방식입니다. 수집이 실패해도 한국 보드는 그대로 갱신됩니다.</p>
+    </header>
+    <nav>
+      <a href="../">오늘 KR</a>
+      <a href="../keywords/">키워드</a>
+      <a href="../shorts/">쇼츠</a>
+      <a href="../vs-yesterday/">어제 대비</a>
+      <a href="./" aria-current="page">일본</a>
+    </nav>
+    <p id="status" class="sub"></p>
+    <p id="facts" class="facts"></p>
+    <div id="ad-slot-board" aria-hidden="true"></div>
+    <div class="sort-bar">
+      <button type="button" data-sort="vph" aria-pressed="true">VPH</button>
+      <button type="button" data-sort="viralScore" aria-pressed="false">기여도</button>
+    </div>
+    <div id="video-list" class="list"></div>
+    <div id="ad-slot-action" aria-hidden="true"></div>
+    <footer><a href="../studio.html">도구(키 필요)</a></footer>
+  </div>
+  <script src="../data/embed-jp.js"></script>
+  <script src="../assets/config.js"></script>
+  <script src="../assets/radar.js"></script>
+</body>
+</html>

@@ -34,3 +34,19 @@ YouTube Insight는 유튜브 알고리즘을 역공학하여 떡상 가능성이
 1. 배포된 웹사이트 주소(GitHub Pages URL)에 스마트폰 브라우저(Safari, Chrome, Samsung Internet 등)로 접속합니다.
 2. 우측 상단 **[⚙️ API 키 설정]** 버튼을 눌러 본인의 YouTube / Gemini API 키를 1회 등록합니다.
 3. **[홈 화면에 추가]** 기능을 이용하면 앱(PWA)처럼 바로가기 아이콘을 홈 화면에 두고 언제 어디서든 간편하게 실행할 수 있습니다.
+
+---
+
+## 공개 급등 보드 (키 없음)
+
+루트 페이지(`/`)는 API 키 없이 한국 일일 급등 보드를 보여 줍니다. BYOK 스튜디오는 [`studio.html`](studio.html) 과 [`youtube_insight.html`](youtube_insight.html) 에 있습니다.
+
+- 공개 URL: `/` (오늘 KR), `/keywords/`, `/shorts/`, `/vs-yesterday/`, `/jp/`, `/kr/YYYY-MM-DD/`
+- 시크릿: GitHub Actions `YOUTUBE_API_KEY` (YouTube Data API v3). 프론트에 키를 넣지 않습니다.
+- 갱신: `.github/workflows/refresh-radar.yml` 이 6시간마다 `videos.list`(mostPopular) + `channels.list` 만 호출해 `data/kr-latest.json` 을 커밋합니다.
+- 로컬: `index.html`을 브라우저로 열어도 됩니다. 또는 `python3 -m http.server 8080` 후 http://127.0.0.1:8080/
+- 원클릭 실행: `./run-local.sh` 를 실행하면 로컬 폴더에서 `python3 -m http.server 8080` 을 띄우고 기본으로 `studio.html` 을 브라우저에서 엽니다. 다른 페이지를 열려면 `./run-local.sh index.html` 처럼 인자를 넘기세요.
+- 더 바로 실행: `./start-studio.sh` 를 실행하면 항상 `studio.html` 을 엽니다. Linux 데스크톱에서는 `YouTubeInsightStudio.desktop` 파일을 더블클릭해서 실행할 수 있습니다.
+- 반응형 UI: `assets/responsive.css` 가 스튜디오와 공개 보드에 공통 적용됩니다 (768px/480px 브레이크포인트). PRD: [`docs/PRD-responsive-ui.md`](docs/PRD-responsive-ui.md). 레퍼런스: [`docs/ui-references.md`](docs/ui-references.md).
+- GitHub Pages: https://heymybiz.github.io/youtubeinsight/  (이 브랜치가 `main`에 반영된 뒤)
+- 광고: `assets/config.js` 의 `ADSENSE_CLIENT` 가 비어 있으면 스크립트를 로드하지 않습니다. 팝언더 없음.

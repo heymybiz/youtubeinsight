@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=YouTube Insight Studio
+Comment=로컬 서버를 켜고 스튜디오를 브라우저에서 실행합니다
+Exec=/bin/bash -lc 'cd /workspace && ./start-studio.sh'
+Icon=utilities-terminal
+Terminal=true
+Categories=Development;
+Path=/workspace

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>톤 비교 목업 — 5종</title>
+  <style>
+    /* ── 테마 토큰 ─────────────────────────────────────── */
+    [data-theme="now"] {
+      --bg: #0f1015; --card: #1a1c23; --panel: #22252e; --line: #374151;
+      --text: #f3f4f6; --mute: #9ca3af; --accent: #3b82f6; --accent-2: #8b5cf6;
+      --gold: #fbbf24; --press: #1e293b; --chip: #1f2937; --chip-fg: #fde68a;
+      --primary-fg: #fff; --shadow: #0b1220;
+    }
+    [data-theme="yt-dark"] {
+      --bg: #0f0f0f; --card: #212121; --panel: #272727; --line: #3f3f3f;
+      --text: #f1f1f1; --mute: #aaaaaa; --accent: #ff0000; --accent-2: #3ea6ff;
+      --gold: #e5c04b; --press: #000; --chip: #272727; --chip-fg: #f1f1f1;
+      --primary-fg: #fff; --shadow: #000;
+    }
+    [data-theme="yt-light"] {
+      --bg: #f9f9f9; --card: #ffffff; --panel: #f2f2f2; --line: #e5e5e5;
+      --text: #0f0f0f; --mute: #606060; --accent: #cc0000; --accent-2: #065fd4;
+      --gold: #a16207; --press: #b7b7b7; --chip: #f2f2f2; --chip-fg: #0f0f0f;
+      --primary-fg: #fff; --shadow: #cfcfcf;
+    }
+    [data-theme="github"] {
+      --bg: #0d1117; --card: #161b22; --panel: #21262d; --line: #30363d;
+      --text: #e6edf3; --mute: #8b949e; --accent: #238636; --accent-2: #58a6ff;
+      --gold: #d29922; --press: #010409; --chip: #21262d; --chip-fg: #e6edf3;
+      --primary-fg: #fff; --shadow: #010409;
+    }
+    [data-theme="quiet"] {
+      --bg: #111111; --card: #1a1a1a; --panel: #222; --line: #2e2e2e;
+      --text: #ececec; --mute: #8a8a8a; --accent: #ececec; --accent-2: #a3a3a3;
+      --gold: #c4c4c4; --press: #000; --chip: #222; --chip-fg: #ececec;
+      --primary-fg: #111; --shadow: #000;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      font-family: "Roboto", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+    }
+
+    .chooser {
+      position: sticky; top: 0; z-index: 20;
+      background: var(--card);
+      border-bottom: 1px solid var(--line);
+      padding: 10px 14px 12px;
+    }
+    .chooser h1 { font-size: 15px; margin: 0 0 4px; font-weight: 600; }
+    .chooser p { margin: 0 0 10px; font-size: 12px; color: var(--mute); line-height: 1.45; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tab {
+      appearance: none; border: 1px solid var(--line); background: var(--panel);
+      color: var(--text); border-radius: 999px; padding: 8px 12px; font-size: 12px;
+      font-weight: 600; cursor: pointer;
+    }
+    .tab[aria-pressed="true"] {
+      background: var(--accent); color: var(--primary-fg); border-color: var(--accent);
+    }
+    a.back { color: var(--accent-2); font-size: 12px; }
+
+    .frame { max-width: 1100px; margin: 0 auto; padding: 16px; }
+    .block, header.app {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    header.app { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center; }
+    h2 { margin: 0; font-size: 20px; font-weight: 600; }
+    .sub { color: var(--mute); font-size: 12px; }
+
+    /* uiverse-style soft press (3px hard shadow, press down) */
+    .btn, .chip, .pill, .ticker {
+      transition: transform .08s ease, box-shadow .08s ease, background .15s ease, border-color .15s ease;
+    }
+    .btn {
+      appearance: none; border: 0; border-radius: 8px; padding: 10px 14px;
+      font-weight: 600; font-size: 13px; cursor: pointer;
+      background: var(--panel); color: var(--text);
+      box-shadow: 0 3px 0 var(--press);
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 var(--press);
+    }
+    .btn.primary { background: var(--accent); color: var(--primary-fg); }
+    .btn.gold { background: var(--gold); color: #111; }
+    [data-theme="quiet"] .btn.gold { background: var(--panel); color: var(--text); border: 1px solid var(--line); }
+    [data-theme="now"] .btn.gold {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    }
+    [data-theme="now"] .btn.primary {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    }
+
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .token { font-size: 12px; color: var(--mute); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+
+    .pills { display: flex; gap: 6px; flex-wrap: wrap; }
+    .pill {
+      background: var(--panel); color: var(--mute); border: 1px solid var(--line);
+      border-radius: 999px; padding: 7px 12px; font-size: 12px; font-weight: 600; cursor: pointer;
+      box-shadow: 0 2px 0 var(--press);
+    }
+    .pill:active { transform: translateY(1px); box-shadow: 0 0 0 var(--press); }
+    .pill.on {
+      background: transparent; color: var(--text); border-color: var(--accent);
+      box-shadow: none; border-bottom-width: 2px;
+    }
+    [data-theme="now"] .pill.on {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: #fff; border-color: transparent;
+    }
+
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+    .ticker {
+      flex: 1; min-width: 240px; background: var(--panel); border: 1px solid var(--line);
+      border-radius: 8px; padding: 10px 12px; display: flex; gap: 8px; align-items: center; cursor: pointer;
+    }
+    .ticker:active { transform: translateY(1px); }
+    .rank {
+      width: 22px; height: 22px; border-radius: 4px; background: var(--accent); color: var(--primary-fg);
+      font-weight: 800; font-size: 12px; display: grid; place-items: center; flex: 0 0 auto;
+    }
+    [data-theme="quiet"] .rank { background: var(--text); color: var(--bg); }
+
+    label { font-size: 11px; color: var(--mute); font-weight: 600; display: block; margin-bottom: 5px; }
+    .filters { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    @media (max-width: 700px) { .filters { grid-template-columns: 1fr; } }
+    select, input {
+      width: 100%; background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
+      color: var(--text); padding: 10px; font-size: 14px;
+    }
+    .search { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .search input { flex: 1; min-width: 180px; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .chip {
+      background: var(--chip); color: var(--chip-fg); border: 1px solid var(--line);
+      border-radius: 999px; padding: 8px 12px; font-weight: 600; font-size: 13px; cursor: pointer;
+      box-shadow: 0 2px 0 var(--press);
+    }
+    .chip:active { transform: translateY(2px); box-shadow: 0 0 0 var(--press); }
+    .chip[aria-pressed="true"] {
+      border-color: var(--gold);
+      box-shadow: inset 0 -2px 0 var(--gold);
+    }
+
+    .kpi { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
+    @media (max-width: 700px) { .kpi { grid-template-columns: 1fr 1fr; } }
+    .kpi div { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; text-align: center; }
+    .kpi b { font-size: 20px; display: block; }
+    .kpi span { color: var(--mute); font-size: 12px; }
+
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    @media (max-width: 700px) { .cards { grid-template-columns: 1fr; } }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+    .thumb { aspect-ratio: 16/9; background: var(--panel); }
+    .card p { margin: 0; padding: 12px; font-size: 14px; font-weight: 600; }
+
+    .modal {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55);
+      align-items: center; justify-content: center; z-index: 30;
+    }
+    .modal.on { display: flex; }
+    .sheet { background: var(--card); border: 1px solid var(--line); border-radius: 12px; width: min(480px, 92vw); padding: 16px; }
+    #toast {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      background: var(--text); color: var(--bg); padding: 8px 14px; border-radius: 999px;
+      font-size: 12px; font-weight: 700; display: none; z-index: 40;
+    }
+
+    .note {
+      font-size: 12px; color: var(--mute); margin: 0 0 12px; padding: 10px 12px;
+      border-left: 3px solid var(--accent); background: var(--panel); border-radius: 0 8px 8px 0;
+    }
+  </style>
+</head>
+<body data-theme="yt-dark">
+  <div class="chooser">
+    <h1>톤 비교 — 같은 화면 5종</h1>
+    <p>
+      레이아웃·기능은 전부 같습니다. 탭만 바꿔 보세요. 버튼은 눌러보면 살짝 내려갑니다 (soft-press).
+      <a class="back" href="index.html">목업 목록</a>
+    </p>
+    <div class="tabs" role="tablist">
+      <button class="tab" type="button" data-theme="now">1. 지금 (AI 톤)</button>
+      <button class="tab" type="button" data-theme="yt-dark" aria-pressed="true">2. YouTube 다크</button>
+      <button class="tab" type="button" data-theme="yt-light">3. Studio 라이트</button>
+      <button class="tab" type="button" data-theme="github">4. GitHub 다크</button>
+      <button class="tab" type="button" data-theme="quiet">5. Quiet</button>
+    </div>
+  </div>
+
+  <div class="frame">
+    <p class="note" id="blurb"></p>
+
+    <header class="app">
+      <div>
+        <h2>YouTube Insight</h2>
+        <div class="sub">스튜디오 · 키는 브라우저에만 저장</div>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button">태그 랭킹</button>
+        <button class="btn" type="button">API 키</button>
+        <button class="btn" type="button">CSV</button>
+        <div class="token">Token $0.00</div>
+      </div>
+    </header>
+
+    <div class="block">
+      <strong>실시간 트렌드</strong>
+      <span class="sub"> · KR</span>
+      <div class="pills" style="margin-top:10px;">
+        <button class="pill on" type="button">종합</button>
+        <button class="pill" type="button">예능</button>
+        <button class="pill" type="button">뉴스</button>
+        <button class="pill" type="button">게임</button>
+        <button class="pill" type="button">음악</button>
+        <button class="pill" type="button">쇼츠</button>
+      </div>
+      <div class="row">
+        <div class="ticker" id="ticker">
+          <span class="rank">1</span>
+          <span>용적률</span>
+          <span class="sub">카테고리 영상 순위</span>
+        </div>
+        <button class="btn gold" type="button" id="goldBtn">황금키워드로 검색</button>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="filters">
+        <div><label>업로드</label><select><option>전체</option></select></div>
+        <div><label>정렬</label><select><option>관련성</option></select></div>
+        <div><label>길이</label><select><option>전체</option></select></div>
+      </div>
+      <div class="search">
+        <select style="max-width:140px;"><option>키워드 검색</option></select>
+        <input id="keyword" placeholder="칩을 누르거나 직접 입력">
+        <button class="btn primary" type="button">검색</button>
+      </div>
+    </div>
+
+    <div class="block" id="golden">
+      <strong>황금키워드</strong>
+      <div class="sub">급등 중인 제목에서 뽑은 검색 문구. 칩을 누르면 칸에 들어갑니다.</div>
+      <div class="chips">
+        <button class="chip" type="button" data-q="민생회복 소비쿠폰">민생회복 소비쿠폰</button>
+        <button class="chip" type="button" data-q="여자 멀리뛰기">여자 멀리뛰기</button>
+        <button class="chip" type="button" data-q="용적률">용적률</button>
+        <button class="chip" type="button" data-q="여자 배구">여자 배구</button>
+      </div>
+    </div>
+
+    <div class="kpi">
+      <div><span>영상</span><b>48</b></div>
+      <div><span>평균 조회</span><b>286K</b></div>
+      <div><span>떡상지수</span><b>82</b></div>
+      <div><span>갭</span><b>—</b></div>
+    </div>
+
+    <div class="cards">
+      <div class="card"><div class="thumb"></div><p>결과 카드</p></div>
+      <div class="card"><div class="thumb"></div><p>결과 카드</p></div>
+      <div class="card"><div class="thumb"></div><p>결과 카드</p></div>
+    </div>
+  </div>
+
+  <div class="modal" id="rankModal">
+    <div class="sheet">
+      <strong>카테고리 영상 Top 20</strong>
+      <p class="sub">티커만 이 창을 엽니다. 황금키워드 버튼은 열지 않습니다.</p>
+      <button class="btn" type="button" id="closeRank">닫기</button>
+    </div>
+  </div>
+  <div id="toast"></div>
+
+  <script>
+    const blurbs = {
+      now: "1. 지금 — 보라 그라데이션, 금 버튼, 여러 액센트. ‘AI 대시보드’ 티가 나는 기준점입니다.",
+      "yt-dark": "2. YouTube 다크 — 배경 #0f0f0f, 액센트 빨강 하나, 링크만 파랑. 워치 페이지 톤.",
+      "yt-light": "3. Studio 라이트 — 흰 카드, 회색 면, 빨강/파랑. 실제 YouTube 스튜디오에 가장 가깝습니다.",
+      github: "4. GitHub 다크 — #0d1117, 버튼 초록 하나. 칩·보더가 차분합니다.",
+      quiet: "5. Quiet — 액센트도 회색. 이모지·골드 없음. 가장 덜 ‘만든 티’."
+    };
+
+    const body = document.body;
+    const blurb = document.getElementById("blurb");
+    const setTheme = (id) => {
+      body.setAttribute("data-theme", id);
+      blurb.textContent = blurbs[id];
+      document.querySelectorAll(".tab").forEach((t) => t.setAttribute("aria-pressed", t.dataset.theme === id ? "true" : "false"));
+    };
+    setTheme("yt-dark");
+    document.querySelectorAll(".tab").forEach((t) => t.onclick = () => setTheme(t.dataset.theme));
+
+    document.querySelectorAll(".pill").forEach((p) => p.onclick = () => {
+      document.querySelectorAll(".pill").forEach((x) => x.classList.remove("on"));
+      p.classList.add("on");
+    });
+
+    const toast = (msg) => {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.style.display = "block";
+      setTimeout(() => el.style.display = "none", 1400);
+    };
+    document.getElementById("ticker").onclick = () => document.getElementById("rankModal").classList.add("on");
+    document.getElementById("closeRank").onclick = () => document.getElementById("rankModal").classList.remove("on");
+    document.getElementById("goldBtn").onclick = () => {
+      document.getElementById("golden").scrollIntoView({ behavior: "smooth", block: "center" });
+      toast("황금키워드로 이동");
+    };
+    document.querySelectorAll(".chip").forEach((c) => c.onclick = () => {
+      document.getElementById("keyword").value = c.dataset.q;
+      document.querySelectorAll(".chip").forEach((x) => x.setAttribute("aria-pressed", "false"));
+      c.setAttribute("aria-pressed", "true");
+      toast(c.dataset.q);
+    });
+  </script>
+</body>
+</html>

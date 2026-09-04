@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>목업 — YouTube Insight 스튜디오</title>
+  <style>
+    :root {
+      --bg: #0f1015;
+      --card: #1a1c23;
+      --panel: #22252e;
+      --line: #374151;
+      --text: #f3f4f6;
+      --mute: #9ca3af;
+      --blue: #3b82f6;
+      --gold: #fbbf24;
+      --note: #38bdf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      background: #07080c;
+      color: var(--text);
+    }
+    .page { max-width: 1280px; margin: 0 auto; padding: 24px 16px 64px; }
+    h1 { font-size: 1.4rem; margin: 0 0 8px; }
+    .lede { color: var(--mute); line-height: 1.55; max-width: 72ch; }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin: 24px 0;
+    }
+    figure {
+      margin: 0;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    figure img { width: 100%; display: block; }
+    figcaption { padding: 10px 12px; font-size: 13px; color: var(--mute); }
+    .links { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 28px; }
+    .links a {
+      background: var(--blue);
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .links a.ghost { background: #374151; }
+    .rules {
+      background: var(--card);
+      border: 1px dashed #4b5563;
+      border-radius: 12px;
+      padding: 16px 18px;
+      font-size: 14px;
+      line-height: 1.55;
+      color: #d1d5db;
+    }
+    .rules strong { color: var(--gold); }
+    code { font-size: 12px; background: #111; padding: 1px 5px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>스튜디오 목업</h1>
+    <p class="lede">1번 워크벤치를 고른 뒤, <a href="bench-ref.html" style="color:#93c5fd">블링·뷰트랩 장점만 얹은 목업</a>을 보세요. 추출 표: <a href="../refs-vling-viewtrap.md" style="color:#93c5fd">refs</a>.</p>
+    <div class="links">
+      <a href="bench-ref.html">워크벤치 × 블링·뷰트랩 (추천)</a>
+      <a class="ghost" href="work-five.html">조사 도구 5종</a>
+      <a class="ghost" href="../refs-vling-viewtrap.md">블링·뷰트랩 장점 표</a>
+      <a class="ghost" href="studio-desktop.html">Desktop 1440</a>
+      <a class="ghost" href="studio-phone.html">Phone 390</a>
+      <a class="ghost" href="yt-radical.html">실패한 유튜브 분장</a>
+      <a class="ghost" href="compare.html">톤 비교</a>
+      <a class="ghost" href="../PRD-responsive-ui.md">PRD</a>
+    </div>
+    <div class="gallery" id="work-shots">
+      <figure>
+        <img src="work_bench.png" alt="1 워크벤치">
+        <figcaption>1 워크벤치 — 왼쪽 급등 표, 오른쪽 선택 영상의 검색어.</figcaption>
+      </figure>
+      <figure>
+        <img src="work_search.png" alt="2 검색 우선">
+        <figcaption>2 검색 우선 — 검색이 본체. 칩은 자동완성, 순위는 아래 참고.</figcaption>
+      </figure>
+      <figure>
+        <img src="work_brief.png" alt="3 오늘 브리핑">
+        <figcaption>3 오늘 브리핑 — 토픽마다 검색 / 순위 버튼이 갈림.</figcaption>
+      </figure>
+      <figure>
+        <img src="work_table.png" alt="4 콘텐츠 표">
+        <figcaption>4 콘텐츠 표 — 필터+표. 행을 고르면 키워드 드로어.</figcaption>
+      </figure>
+      <figure>
+        <img src="work_thumb.png" alt="5 엄지 스택">
+        <figcaption>5 엄지 스택 — 390px. 칩 다음, 검색은 하단 고정.</figcaption>
+      </figure>
+    </div>
+    <div class="rules">
+      <p><strong>고정 CTA</strong> — 순위 버튼/표 = 카테고리 영상 Top 20. 황금키워드 버튼 = 칩으로 포커스. 칩 = 검색창 채움.</p>
+      <p><strong>원칙</strong> — 검색창은 항상 보임. 가짜 구독/좋아요/쇼츠 월 없음. 폰은 하단 검색.</p>
+      <p>로컬: <code>./run-local.sh docs/mockups/bench-ref.html</code></p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,390 @@
+/**
+ * Responsive + accessibility layer
+ * Adapted from patterns in:
+ * - mbparks/YouTubeLedger (auto-fit grids, flex-wrap, overflow-x scroll regions, clamp typography)
+ * - fo0/tubetrend (dark scrollbar, focus-visible, reduced-motion)
+ */
+
+/* ── Shared tokens ───────────────────────────────────────────── */
+:root {
+  --bp-tablet: 1024px;
+  --bp-mobile: 768px;
+  --bp-phone: 480px;
+  --touch-min: 44px;
+}
+
+/* tubetrend-inspired scrollbar (dark) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* tubetrend-inspired keyboard focus */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.golden-chip:focus-visible,
+.trend-tab:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Studio + shared layout ──────────────────────────────────── */
+
+/* YouTubeLedger-style fluid title where h1 exists */
+h1 {
+  font-size: clamp(1.25rem, 4vw, 1.625rem);
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  body {
+    padding: 16px;
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+
+  .container {
+    max-width: 100%;
+  }
+
+  .card-container {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  .trend-main-title {
+    font-size: 14px;
+  }
+
+  .modal-box {
+    width: 94%;
+    max-width: 720px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  html,
+  body {
+    overflow-x: clip;
+    max-width: 100%;
+  }
+
+  body {
+    padding: 12px;
+  }
+
+  .container {
+    overflow-x: clip;
+    max-width: 100%;
+  }
+
+  header {
+    padding: 16px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-actions > button,
+  .header-actions > .usage-stats {
+    width: 100%;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  .usage-stats {
+    min-width: 0;
+  }
+
+  .trend-center-panel {
+    padding: 14px;
+    overflow: hidden;
+    max-width: 100%;
+  }
+
+  .trend-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .trend-title-area {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .trend-category-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    padding-bottom: 4px;
+    margin: 0 -4px;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .trend-tab {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .trend-rolling-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .rolling-info {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .ticker-text {
+    max-width: none;
+    white-space: normal;
+    line-height: 1.25;
+  }
+
+  .rolling-click-hint {
+    display: none;
+  }
+
+  .trend-actions {
+    width: 100%;
+  }
+
+  .trend-actions button,
+  .btn-open-golden {
+    width: 100%;
+    min-height: var(--touch-min);
+  }
+
+  .filter-panel {
+    padding: 16px;
+  }
+
+  .native-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .search-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-row select,
+  .search-row input,
+  .search-row button {
+    width: 100%;
+    min-width: 0;
+    min-height: var(--touch-min);
+  }
+
+  .golden-head {
+    flex-direction: column;
+  }
+
+  .golden-def {
+    max-width: none;
+    font-size: 11px;
+  }
+
+  .golden-chip {
+    min-height: var(--touch-min);
+    padding: 10px 14px;
+  }
+
+  .dashboard {
+    flex-direction: column;
+  }
+
+  .dash-card {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .tabs {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tab {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 10px 16px;
+  }
+
+  .sort-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sort-bar .flex {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .sort-options {
+    width: 100%;
+  }
+
+  .sort-options .sort-btn {
+    flex: 1 1 auto;
+    min-height: var(--touch-min);
+  }
+
+  .card-container {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-box {
+    width: 100%;
+    max-width: none;
+    max-height: 100dvh;
+    border-radius: 12px 12px 0 0;
+    margin-top: auto;
+  }
+
+  .overlay {
+    align-items: flex-end;
+    width: 100vw;
+    max-width: 100%;
+    left: 0;
+    right: 0;
+  }
+
+  .ranking-list {
+    max-height: 55dvh;
+  }
+
+  .ranking-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .rank-kw {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .rank-search-btn {
+    width: 100%;
+    min-height: var(--touch-min);
+  }
+}
+
+/* Phone */
+@media (max-width: 480px) {
+  h1 span {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px !important;
+  }
+
+  .dash-val {
+    font-size: 22px;
+  }
+
+  .card-body {
+    padding: 14px;
+  }
+
+  .action-row {
+    flex-direction: column;
+  }
+
+  .action-row button {
+    width: 100%;
+    min-height: var(--touch-min);
+  }
+
+  .multi-ai-btn {
+    width: 100%;
+  }
+}
+
+/* ── Public radar pages (assets/radar.css companion) ───────── */
+@media (max-width: 768px) {
+  .wrap {
+    padding: 12px;
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+  }
+
+  nav {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+
+  nav a {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .sort-bar {
+    flex-wrap: wrap;
+  }
+
+  .sort-bar button,
+  .keywords button,
+  .actions a,
+  .actions button {
+    min-height: var(--touch-min);
+  }
+}
+
+@media (max-width: 640px) {
+  .card {
+    grid-template-columns: 1fr;
+  }
+
+  .card img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+}
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 1.15rem;
+  }
+
+  .facts {
+    font-size: 0.85rem;
+  }
+}

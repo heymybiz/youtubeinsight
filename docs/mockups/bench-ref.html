@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>워크벤치 × 블링·뷰트랩</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <style>
+    :root {
+      --bg: #f3f4f6;
+      --card: #fff;
+      --line: #e5e7eb;
+      --text: #111827;
+      --mute: #6b7280;
+      --faint: #9ca3af;
+      --blue: #2563eb;
+      --navy: #111827;
+      --gold: #b45309;
+      --gold-bg: #fffbeb;
+      --gold-line: #f59e0b;
+      --great: #059669;
+      --great-bg: #d1fae5;
+      --good: #2563eb;
+      --good-bg: #dbeafe;
+      --norm: #6b7280;
+      --norm-bg: #f3f4f6;
+      --hot: #dc2626;
+      --focus: 0 0 0 3px rgba(37,99,238,.35);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--bg); color: var(--text); font-family: Pretendard, system-ui, sans-serif; font-size: 14px; }
+    button, input, select { font-family: inherit; }
+    button { cursor: pointer; }
+    :focus-visible { outline: none; box-shadow: var(--focus); }
+    .tabular { font-variant-numeric: tabular-nums; }
+    a { color: var(--blue); }
+
+    .note {
+      background: #111827; color: #e5e7eb; padding: 10px 16px; font-size: 12px; line-height: 1.45;
+    }
+    .note strong { color: #fde68a; }
+    .top {
+      background: var(--card); border-bottom: 1px solid var(--line);
+      padding: 12px 20px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+    }
+    .brand { font-weight: 800; font-size: 18px; letter-spacing: -.04em; }
+    .search {
+      flex: 1; min-width: 240px; display: flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #fff;
+    }
+    .search input { flex: 1; border: 0; padding: 11px 14px; font-size: 15px; outline: none; min-width: 0; }
+    .search .go { border: 0; background: var(--navy); color: #fff; padding: 0 18px; font-weight: 700; min-width: 76px; }
+    .btn {
+      border: 1px solid var(--line); background: #fff; border-radius: 8px;
+      min-height: 40px; padding: 0 12px; font-weight: 650;
+    }
+    .btn:hover { background: #f9fafb; }
+    .btn-gold { background: var(--gold-bg); border-color: var(--gold-line); color: var(--gold); }
+
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+      padding: 10px 20px; background: var(--card); border-bottom: 1px solid var(--line);
+    }
+    .seg { display: flex; background: #f3f4f6; border-radius: 8px; padding: 3px; }
+    .seg button {
+      border: 0; background: transparent; padding: 7px 12px; border-radius: 6px;
+      font-weight: 650; font-size: 13px; color: var(--mute);
+    }
+    .seg button.on { background: #fff; color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+    .field { display: flex; align-items: center; gap: 6px; color: var(--mute); font-size: 12px; font-weight: 650; }
+    .field select {
+      border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; min-height: 40px; background: #fff;
+    }
+    .toggle { display: flex; align-items: center; gap: 8px; margin-left: auto; font-size: 12px; color: var(--mute); }
+    .switch { width: 36px; height: 20px; background: #d1d5db; border-radius: 99px; position: relative; border: 0; }
+    .switch.on { background: var(--blue); }
+    .switch i { position: absolute; width: 16px; height: 16px; background: #fff; border-radius: 50%; top: 2px; left: 2px; transition: left .15s; }
+    .switch.on i { left: 18px; }
+
+    .cats { display: flex; gap: 6px; overflow-x: auto; padding: 10px 20px 0; }
+    .cat {
+      flex: 0 0 auto; border: 1px solid var(--line); background: #fff; border-radius: 999px;
+      padding: 7px 12px; font-weight: 650; font-size: 13px;
+    }
+    .cat.on { background: var(--navy); color: #fff; border-color: var(--navy); }
+
+    .grades { display: flex; gap: 6px; padding: 10px 20px; align-items: center; }
+    .grades span { font-size: 12px; color: var(--mute); margin-right: 4px; }
+    .badge {
+      border: 0; border-radius: 6px; padding: 4px 8px; font-size: 11px; font-weight: 800; letter-spacing: .02em;
+    }
+    .badge.great { background: var(--great-bg); color: var(--great); }
+    .badge.good { background: var(--good-bg); color: var(--good); }
+    .badge.norm { background: var(--norm-bg); color: var(--norm); }
+    .badge.on { outline: 2px solid currentColor; }
+
+    .split { display: grid; grid-template-columns: 1fr 340px; min-height: calc(100dvh - 220px); }
+    .list { padding: 8px 12px 40px; }
+    .insp {
+      background: var(--card); border-left: 1px solid var(--line); padding: 18px;
+      position: sticky; top: 0; height: calc(100dvh - 0px); overflow: auto;
+    }
+    .thead, .row {
+      display: grid; grid-template-columns: 36px 148px 1fr 88px 88px 72px 88px 92px;
+      gap: 10px; align-items: center;
+    }
+    .thead {
+      padding: 6px 10px; font-size: 11px; font-weight: 700; color: var(--faint); letter-spacing: .02em;
+    }
+    .thead button { border: 0; background: none; font: inherit; color: inherit; padding: 0; text-align: left; }
+    .thead button.sort { color: var(--blue); }
+    .row {
+      background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+      padding: 10px; margin-bottom: 8px; cursor: pointer;
+    }
+    .row:hover { border-color: #cbd5e1; }
+    .row.on { border-color: var(--navy); box-shadow: 0 0 0 1px var(--navy); }
+    .rk { font-weight: 800; text-align: center; color: var(--mute); }
+    .rk.hot { color: var(--hot); }
+    .thumb {
+      width: 148px; height: 84px; border-radius: 8px; position: relative; overflow: hidden;
+      background: #111 center/cover;
+    }
+    .thumb .dur {
+      position: absolute; right: 6px; bottom: 6px; background: #000; color: #fff;
+      font-size: 11px; padding: 1px 4px; border-radius: 3px; font-weight: 700;
+    }
+    .row h3 { margin: 0; font-size: 14px; font-weight: 700; line-height: 1.35; }
+    .meta { color: var(--mute); font-size: 12px; margin-top: 4px; }
+    .spark { height: 28px; }
+    .spark svg { width: 88px; height: 28px; display: block; }
+    .col { text-align: right; }
+    .help { color: var(--mute); font-size: 12px; margin: 0 0 12px; line-height: 1.5; }
+    .score {
+      display: flex; align-items: baseline; gap: 8px; margin: 8px 0 14px;
+    }
+    .score b { font-size: 36px; letter-spacing: -.04em; }
+    .bar { height: 6px; background: #e5e7eb; border-radius: 99px; overflow: hidden; margin-bottom: 16px; }
+    .bar i { display: block; height: 100%; background: #7c3aed; }
+    .kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+    .kpis div { background: #f9fafb; border-radius: 10px; padding: 10px; }
+    .kpis span { font-size: 11px; color: var(--mute); display: block; }
+    .kpis b { font-size: 18px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip {
+      border: 1px solid var(--gold-line); background: var(--gold-bg); color: var(--gold);
+      border-radius: 999px; padding: 8px 12px; min-height: 40px; font-weight: 700; font-size: 13px;
+    }
+    .tip { border: 0; background: none; color: var(--faint); font-size: 12px; padding: 0 2px; }
+    .modal {
+      display: none; position: fixed; inset: 0; background: rgba(17,24,39,.45); z-index: 20;
+      justify-content: flex-end;
+    }
+    .modal.on { display: flex; }
+    .sheet { width: min(420px, 100%); background: #fff; padding: 20px; overflow: auto; }
+    .mrow { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); align-items: center; }
+    #toast {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      background: #111; color: #fff; padding: 8px 14px; border-radius: 999px; font-weight: 700; font-size: 12px; display: none; z-index: 30;
+    }
+    @media (max-width: 1100px) {
+      .split { grid-template-columns: 1fr; }
+      .insp { position: relative; height: auto; border-left: 0; border-top: 1px solid var(--line); }
+      .thead { display: none; }
+      .row { grid-template-columns: 28px 120px 1fr; }
+      .row .col, .row .spark { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="note">
+    <strong>1 워크벤치</strong> + 블링(정렬·필터·스코어·미니그래프) + 뷰트랩(Great/Good 라벨, 수치 토글, 썸네일 스캔).
+    광고 단가·과금·없는 인구통계는 안 가져옴.
+    <a href="work-five.html" style="color:#93c5fd">이전 5종</a> ·
+    <a href="../refs-vling-viewtrap.md" style="color:#93c5fd">장점 표</a>
+  </div>
+
+  <header class="top">
+    <div class="brand">Insight</div>
+    <div class="search">
+      <input id="keyword" placeholder="키워드 또는 아래 칩" aria-label="검색">
+      <button class="go" type="button">검색</button>
+    </div>
+    <button class="btn" type="button" id="rankBtn">영상 순위 20</button>
+    <button class="btn btn-gold" type="button" id="goldBtn">황금키워드</button>
+  </header>
+
+  <div class="toolbar">
+    <div class="seg" id="sortSeg">
+      <button type="button" class="on" data-sort="trend">요즘 뜨는</button>
+      <button type="button" data-sort="contrib">기여도</button>
+      <button type="button" data-sort="vph">VPH</button>
+      <button type="button" data-sort="views">조회</button>
+    </div>
+    <div class="seg" id="fmtSeg">
+      <button type="button" class="on" data-fmt="all">전체</button>
+      <button type="button" data-fmt="long">롱폼</button>
+      <button type="button" data-fmt="short">Shorts</button>
+    </div>
+    <label class="field">업로드
+      <select id="dateSel"><option>최근 7일</option><option>오늘</option><option>최근 30일</option></select>
+    </label>
+    <div class="toggle">
+      수치로 보기
+      <button class="switch" type="button" id="numToggle" aria-pressed="false"><i></i></button>
+    </div>
+  </div>
+
+  <div class="cats" id="cats"></div>
+  <div class="grades">
+    <span>뷰트랩식 필터</span>
+    <button type="button" class="badge great" data-grade="great">Great</button>
+    <button type="button" class="badge good" data-grade="good">Good</button>
+    <button type="button" class="badge norm" data-grade="norm">Normal</button>
+    <span id="gradeHint" style="font-weight:650"></span>
+  </div>
+
+  <div class="split">
+    <div class="list">
+      <div class="thead">
+        <span>#</span><span>썸네일</span><span>제목</span>
+        <span>기여도 <button class="tip" type="button" title="채널 성장에 이 영상이 기여한 정도">?</button></span>
+        <span>성과도 <button class="tip" type="button" title="구독자 규모와 무관하게 영상 자체가 낸 성과 (VPH)">?</button></span>
+        <span>VPH</span><span>조회</span><span>추이</span>
+      </div>
+      <div id="rows"></div>
+    </div>
+    <aside class="insp" id="insp"></aside>
+  </div>
+
+  <div class="modal" id="rankModal">
+    <div class="sheet">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h2 style="margin:0;font-size:16px">지금 카테고리 영상 Top 20</h2>
+        <button class="btn" type="button" id="closeRank">닫기</button>
+      </div>
+      <p class="help">순위표입니다. 검색어는 황금키워드 칩을 쓰세요.</p>
+      <div id="rankList"></div>
+    </div>
+  </div>
+  <div id="toast"></div>
+
+  <script>
+    const CATS = ["종합", "예능/엔터", "뉴스/시사", "게임", "음악", "재테크", "먹방"];
+    const VIDEOS = [
+      { rank: 1, title: "용적률 하나로 집값이 갈렸다", ch: "부동산랩", contrib: 820, vph: 14200, views: 2860000, dur: "12:04", fmt: "long", kws: ["용적률", "재건축", "부동산"], spark: [12,18,22,40,55,70,92], hue: 0 },
+      { rank: 2, title: "민생회복 소비쿠폰 쓰는 법 전말", ch: "생활경제", contrib: 412, vph: 9800, views: 960000, dur: "8:21", fmt: "long", kws: ["민생회복 소비쿠폰", "소비쿠폰"], spark: [8,9,20,44,48,60,71], hue: 210 },
+      { rank: 3, title: "멀리뛰기 국가대표 리액션", ch: "스포츠컷", contrib: 198, vph: 22100, views: 2100000, dur: "0:48", fmt: "short", kws: ["여자 멀리뛰기", "멀리뛰기"], spark: [30,50,80,90,88,85,84], hue: 140 },
+      { rank: 4, title: "여자 배구 하이라이트", ch: "코트사이드", contrib: 156, vph: 6100, views: 2860000, dur: "22:10", fmt: "long", kws: ["여자 배구", "배구"], spark: [40,42,45,60,62,63,64], hue: 260 },
+      { rank: 5, title: "암벽등반 결승 다시보기", ch: "클라이밍", contrib: 121, vph: 4300, views: 540000, dur: "15:02", fmt: "long", kws: ["암벽등반"], spark: [5,8,10,22,40,41,43], hue: 20 },
+      { rank: 6, title: "재건축 용적률 해설", ch: "도시읽기", contrib: 98, vph: 2900, views: 210000, dur: "18:40", fmt: "long", kws: ["용적률", "재건축"], spark: [10,12,11,14,18,20,21], hue: 350 },
+      { rank: 7, title: "소비쿠폰 가맹점 리스트", ch: "생활경제", contrib: 76, vph: 1800, views: 132000, dur: "6:11", fmt: "long", kws: ["민생회복 소비쿠폰"], spark: [4,6,7,8,9,10,11], hue: 190 },
+      { rank: 8, title: "배구 국가대표 인터뷰", ch: "코트사이드", contrib: 54, vph: 1200, views: 88000, dur: "11:03", fmt: "long", kws: ["여자 배구"], spark: [6,6,7,7,8,8,8], hue: 280 }
+    ];
+
+    const gradeOf = (n) => n >= 200 ? "great" : n >= 100 ? "good" : "norm";
+    const perfOf = (v) => v.vph >= 10000 ? "great" : v.vph >= 4000 ? "good" : "norm";
+    const scoreOf = (v) => Math.min(99, Math.round(40 + Math.log10(v.contrib) * 22));
+    const label = { great: "매우 높음", good: "높음", norm: "보통" };
+    const fmtN = (n) => n >= 10000 ? (n / 10000).toFixed(n >= 100000 ? 0 : 1) + "만" : n.toLocaleString("ko");
+
+    let selected = 0, sort = "trend", fmt = "all", gradeFilter = null, showNum = false;
+
+    const toast = (m) => { const t = document.getElementById("toast"); t.textContent = m; t.style.display = "block"; setTimeout(() => t.style.display = "none", 1400); };
+    const fillKw = (q) => { document.getElementById("keyword").value = q; toast(q); };
+
+    const sparkSvg = (pts) => {
+      const max = Math.max(...pts);
+      const d = pts.map((p, i) => `${(i / (pts.length - 1)) * 88},${28 - (p / max) * 24}`).join(" ");
+      return `<svg viewBox="0 0 88 28"><polyline fill="none" stroke="#7c3aed" stroke-width="2" points="${d}"/></svg>`;
+    };
+
+    const badge = (g, n, kind) => showNum
+      ? `<span class="tabular">${kind === "c" ? n + "%" : fmtN(n)}</span>`
+      : `<span class="badge ${g}">${g === "great" ? "Great" : g === "good" ? "Good" : "Normal"}</span>`;
+
+    function list() {
+      let rows = VIDEOS.slice();
+      if (fmt !== "all") rows = rows.filter((v) => v.fmt === (fmt === "short" ? "short" : "long"));
+      if (gradeFilter) rows = rows.filter((v) => gradeOf(v.contrib) === gradeFilter);
+      const key = { trend: (a, b) => a.rank - b.rank, contrib: (a, b) => b.contrib - a.contrib, vph: (a, b) => b.vph - a.vph, views: (a, b) => b.views - a.views };
+      rows.sort(key[sort]);
+      return rows;
+    }
+
+    function renderRows() {
+      const rows = list();
+      document.getElementById("rows").innerHTML = rows.map((v) => {
+        const i = VIDEOS.indexOf(v);
+        return `<div class="row${i === selected ? " on" : ""}" data-i="${i}">
+          <div class="rk tabular${v.rank < 4 ? " hot" : ""}">${v.rank}</div>
+          <div class="thumb" style="background:linear-gradient(135deg,hsl(${v.hue} 45% 28%),#111)"><span class="dur">${v.dur}</span></div>
+          <div>
+            <h3>${v.title}</h3>
+            <div class="meta">${v.ch} · 오늘 · ${v.fmt === "short" ? "Shorts" : "롱폼"}</div>
+          </div>
+          <div class="col">${badge(gradeOf(v.contrib), v.contrib, "c")}</div>
+          <div class="col">${badge(perfOf(v), v.vph, "p")}</div>
+          <div class="col tabular">${fmtN(v.vph)}</div>
+          <div class="col tabular">${fmtN(v.views)}</div>
+          <div class="spark">${sparkSvg(v.spark)}</div>
+        </div>`;
+      }).join("") || `<p class="help" style="padding:20px">이 필터에 맞는 영상이 없습니다.</p>`;
+      document.querySelectorAll("#rows .row").forEach((el) => el.onclick = () => { selected = +el.dataset.i; render(); });
+    }
+
+    function renderInsp() {
+      const v = VIDEOS[selected];
+      const sc = scoreOf(v);
+      document.getElementById("insp").innerHTML = `
+        <div style="font-size:11px;color:var(--faint);font-weight:700;letter-spacing:.06em">블링식 영상 상세</div>
+        <h2 style="margin:6px 0 8px;font-size:18px">${v.title}</h2>
+        <p class="help">${v.ch} · ${v.dur} · 알고신 스코어는 구독 대비 성과를 0–100으로 본 값입니다.</p>
+        <div class="score"><b class="tabular">${sc}</b><span>${label[gradeOf(v.contrib)]}</span></div>
+        <div class="bar"><i style="width:${sc}%"></i></div>
+        <div class="kpis">
+          <div><span>기여도</span><b>${badge(gradeOf(v.contrib), v.contrib, "c")}</b><div class="tabular" style="margin-top:4px">${v.contrib}%</div></div>
+          <div><span>성과도 · VPH</span><b>${badge(perfOf(v), v.vph, "p")}</b><div class="tabular" style="margin-top:4px">${fmtN(v.vph)}</div></div>
+        </div>
+        <div style="font-size:12px;font-weight:700;margin-bottom:8px">이 제목에서 뽑은 검색 문구</div>
+        <div class="chips" id="kwChips">${v.kws.map((k) => `<button type="button" class="chip" data-q="${k}">${k}</button>`).join("")}</div>
+        <p class="help" style="margin-top:12px">칩 = 검색창. 웹 키워드 덤프가 아닙니다.</p>
+        <button class="btn btn-gold" type="button" style="width:100%;margin-top:8px" data-q="${v.kws[0]}">이 문구로 검색</button>
+        <button class="btn" type="button" id="inspRank" style="width:100%;margin-top:8px">전체 순위 20</button>
+      `;
+      document.querySelectorAll("#insp [data-q]").forEach((b) => b.onclick = () => fillKw(b.dataset.q));
+      document.getElementById("inspRank").onclick = openRank;
+    }
+
+    function render() {
+      renderRows();
+      renderInsp();
+    }
+
+    function openRank() {
+      document.getElementById("rankList").innerHTML = VIDEOS.map((v) =>
+        `<div class="mrow"><b class="tabular" style="width:24px;color:${v.rank < 4 ? "var(--hot)" : "var(--mute)"}">${v.rank}</b><div style="flex:1">${v.title}<div style="color:var(--mute);font-size:12px">${fmtN(v.views)} · 기여 ${v.contrib}%</div></div></div>`
+      ).join("");
+      document.getElementById("rankModal").classList.add("on");
+    }
+
+    document.getElementById("cats").innerHTML = CATS.map((c, i) => `<button type="button" class="cat${i === 0 ? " on" : ""}">${c}</button>`).join("");
+    document.getElementById("cats").onclick = (e) => {
+      if (!e.target.classList.contains("cat")) return;
+      document.querySelectorAll(".cat").forEach((b) => b.classList.toggle("on", b === e.target));
+    };
+
+    document.getElementById("sortSeg").onclick = (e) => {
+      const b = e.target.closest("[data-sort]"); if (!b) return;
+      sort = b.dataset.sort;
+      document.querySelectorAll("#sortSeg button").forEach((x) => x.classList.toggle("on", x === b));
+      render();
+    };
+    document.getElementById("fmtSeg").onclick = (e) => {
+      const b = e.target.closest("[data-fmt]"); if (!b) return;
+      fmt = b.dataset.fmt;
+      document.querySelectorAll("#fmtSeg button").forEach((x) => x.classList.toggle("on", x === b));
+      render();
+    };
+    document.querySelectorAll(".grades .badge").forEach((b) => b.onclick = () => {
+      gradeFilter = gradeFilter === b.dataset.grade ? null : b.dataset.grade;
+      document.querySelectorAll(".grades .badge").forEach((x) => x.classList.toggle("on", x.dataset.grade === gradeFilter));
+      document.getElementById("gradeHint").textContent = gradeFilter ? gradeFilter + "만" : "";
+      render();
+    });
+    document.getElementById("numToggle").onclick = function () {
+      showNum = !showNum;
+      this.classList.toggle("on", showNum);
+      this.setAttribute("aria-pressed", showNum);
+      render();
+    };
+    document.getElementById("rankBtn").onclick = openRank;
+    document.getElementById("closeRank").onclick = () => document.getElementById("rankModal").classList.remove("on");
+    document.getElementById("rankModal").onclick = (e) => { if (e.target.id === "rankModal") e.currentTarget.classList.remove("on"); };
+    document.getElementById("goldBtn").onclick = () => {
+      const c = document.querySelector("#insp .chip");
+      if (c) c.scrollIntoView({ behavior: "smooth", block: "center" });
+      toast("황금키워드");
+    };
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") document.getElementById("rankModal").classList.remove("on");
+      if (e.key === "/" && document.activeElement.tagName !== "INPUT") { e.preventDefault(); document.getElementById("keyword").focus(); }
+    });
+
+    render();
+  </script>
+</body>
+</html>
