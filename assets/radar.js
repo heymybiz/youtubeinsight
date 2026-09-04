@@ -73,6 +73,9 @@
         ? ""
         : '<span>ΔVPH ' + fmtDelta(v.deltaVph) + "</span>";
     const short = v.isShort ? '<span class="badge">쇼츠</span>' : "";
+    const grade =
+      v.viralScore >= 1000 ? "great" : v.viralScore >= 500 ? "good" : "normal";
+    const gradeLabel = grade === "great" ? "Great" : grade === "good" ? "Good" : "Normal";
     return (
       '<article class="card">' +
       '<img src="' +
@@ -88,6 +91,11 @@
       '<div class="stats">' +
       "<span>조회 " +
       formatNum(v.viewCount) +
+      "</span>" +
+      '<span class="pill ' +
+      grade +
+      '">' +
+      gradeLabel +
       "</span>" +
       "<span>기여도 " +
       formatNum(v.viralScore) +
